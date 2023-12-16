@@ -25,47 +25,87 @@ const SellDetails = () => {
     Keyboard.dismiss();
   };
   return (
-    <TouchableWithoutFeedback
-      onPress={dismissKeyboard}
-      className="w-full h-full">
-      <View className="flex-row justify-between">
-        <View
+    <KeyboardAvoidingView onPress={dismissKeyboard} className="w-full h-full">
+      <View className="flex-row justify-between ml-2 shadow-md">
+        {
+          // <View
+          // className={
+          //   searchActive
+          //     ? "mt-2 ml-2   flex-row items-center justify-start border-gray-300 border-2 rounded-md"
+          //     : "my-2 ml-2   flex-row items-center justify-start"
+          // }>
+          // <View
+          //   className={
+          //     searchActive ? "border-r-1 border-gray-400 px-1  " : "px-1 my-2 "
+          //   }>
+          //   <TouchableOpacity
+          //     onPress={() => {
+          //       SetSearchActive(!searchActive);
+          //     }}>
+          //     <View className=" ">
+          //       <FontAwesomeIcon
+          //         name="search"
+          //         size={searchActive ? 20 : 24}
+          //         color={"green"}
+          //       />
+          //     </View>
+          //   </TouchableOpacity>
+          // </View>
+          // <TextInput
+          //   placeholder="Search"
+          //   className={
+          //     searchActive ? "mx-2 w-4/6 py-3 px-2 text-gray-800" : "w-0"
+          //   }
+          // />
+          // </View>
+        }
+
+        <TouchableOpacity
           className={
             searchActive
-              ? "mt-2 ml-2  bg-gray-50 flex-row items-center justify-start border-gray-300 border-2 rounded-md"
-              : "my-2 ml-2  bg-gray-50 flex-row items-center justify-start"
+              ? "bg-green-500  px-4 flex-row justify-center items-center mt-2 rounded-full shadow-md "
+              : "bg-green-500   flex-row justify-center items-center mt-2  rounded-md py-2 px-6 "
           }>
-          <View
-            className={
-              searchActive ? "border-r-1 border-gray-400 px-1" : "px-1 my-4 "
-            }>
-            <TouchableOpacity
-              onPress={() => {
-                console.log(searchActive);
-              }}>
+          {searchActive ? (
+            ""
+          ) : (
+            <View className="flex-row justify-between items-center gap-2">
               <FontAwesomeIcon
-                name="search"
+                name="money"
                 size={searchActive ? 20 : 24}
-                color={searchActive ? "green" : "gray"}
+                color={"white"}
               />
-            </TouchableOpacity>
-          </View>
-          <TextInput
-            placeholder="Search"
-            className={
-              searchActive ? "mx-2 w-5/6 py-3 px-2 text-gray-800" : "w-0"
-            }
-          />
-        </View>
+              <Text>Order</Text>
+            </View>
+          )}
+        </TouchableOpacity>
 
-        <TouchableOpacity>
-          <Text>Sell Product</Text>
+        <TouchableOpacity
+          className={
+            searchActive
+              ? "bg-green-500  px-4 flex-row justify-center items-center mt-2 mr-4 rounded-full shadow-md "
+              : "bg-green-500   flex-row justify-center items-center mt-2 mr-4 rounded-md py-2 px-6 "
+          }>
+          {searchActive ? (
+            <Text className="text-lg font-semibold text-white rounded-full ">
+              +
+            </Text>
+          ) : (
+            <View className="flex-row justify-between items-center gap-2">
+              <FontAwesomeIcon
+                name="shopping-cart"
+                size={searchActive ? 20 : 24}
+                color={"white"}
+              />
+              <Text>Sell Product</Text>
+            </View>
+          )}
         </TouchableOpacity>
       </View>
       <View className="mt-4 ">
         <SellerStore />
       </View>
-    </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 

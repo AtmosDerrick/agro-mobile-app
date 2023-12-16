@@ -100,12 +100,12 @@ const SellerStore = ({ navigation }) => {
         <Text style={styles.status} className="">
           {item.serviceType}
         </Text>
-        <View className="flex-row gap-4 mt-1 pb-1">
-          <TouchableOpacity>
-            <FontAwesomeIcon name="trash" size={20} color="red" />
-          </TouchableOpacity>
+        <View className="flex-row gap-4 mt-1 pb-1 w-full">
           <TouchableOpacity>
             <FontAwesomeIcon name="edit" size={20} color="green" />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <FontAwesomeIcon name="trash" size={20} color="red" />
           </TouchableOpacity>
         </View>
       </View>
