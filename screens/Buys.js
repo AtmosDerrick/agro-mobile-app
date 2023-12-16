@@ -27,7 +27,7 @@ const Buys = () => {
       className="w-full h-full">
       <View className="mt-2 mx-2  bg-gray-50 flex-row items-center justify-start border-gray-300 border-2 rounded-md">
         <TextInput
-          placeholder="Search Parcel Number"
+          placeholder="Search"
           className="mx-2 w-5/6 py-3 px-2 text-gray-800"
         />
         <View className="border-r-1 border-gray-400 px-1">
@@ -36,7 +36,7 @@ const Buys = () => {
           </TouchableOpacity>
         </View>
       </View>
-      <View className="mt-4 mx-4">
+      <View className="mt-4 ">
         <Store />
       </View>
     </TouchableWithoutFeedback>

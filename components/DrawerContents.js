@@ -58,7 +58,7 @@ const DrawerContents = ({ navigation }) => {
               <FontAwesomeIcon name="bookmark" size={24} color="green" />
             </View>
             <Text style={{ fontSize: 18 }} className="font-semibold">
-              Profile
+              BookMarks
             </Text>
           </Pressable>
         </View>

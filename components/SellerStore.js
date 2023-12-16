@@ -1,8 +1,9 @@
 import React from "react";
 import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
+import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 
-const Store = ({ navigation }) => {
+const SellerStore = ({ navigation }) => {
   const img1 = require("../images/img1.jpg");
   const img2 = require("../images/img2.jpg");
   const img3 = require("../images/img3.jpg");
@@ -81,27 +82,34 @@ const Store = ({ navigation }) => {
   ];
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity className="flex-row justify-between mx-3">
+    <View className="flex-row justify-start mx-3 mb-2 bg-gray-200 rounded-md ">
       <View>
-        <View className="w-[160px] h-[160px]">
+        <View className="w-[100px] h-[100px] mr-4">
           <Image
             source={item.image}
-            className="w-[155px] h-[155px] rounded-xl "
+            className="w-[100px] h-[100px] rounded-md "
           />
         </View>
-        <View className="mt-2">
-          <Text style={styles.price}>
-            <Text>{`Gh\u20B5`}</Text>
-            {item.price}
-          </Text>
-          <Text className="py-1 font-medium text-base">{item.productName}</Text>
-          <Text className="text-xs mt-[-2px]">{item.location}</Text>
-          <Text style={styles.status} className="py-1">
-            {item.serviceType}
-          </Text>
+      </View>
+      <View className="">
+        <Text className="text-sm">
+          <Text>{`Gh\u20B5`}</Text>
+          {item.price}
+        </Text>
+        <Text className=" font-medium text-sm">{item.productName}</Text>
+        <Text style={styles.status} className="">
+          {item.serviceType}
+        </Text>
+        <View className="flex-row gap-4 mt-1 pb-1">
+          <TouchableOpacity>
+            <FontAwesomeIcon name="trash" size={20} color="red" />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <FontAwesomeIcon name="edit" size={20} color="green" />
+          </TouchableOpacity>
         </View>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 
   return (
@@ -109,7 +117,7 @@ const Store = ({ navigation }) => {
       data={products}
       renderItem={renderItem}
       keyExtractor={(item) => item.id.toString()}
-      numColumns={2} // Set the number of columns to 2 for a two-column grid
+      numColumns={1} // Set the number of columns to 2 for a two-column grid
       contentContainerStyle={styles.flatListContainer}
     />
   );
@@ -157,4 +165,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Store;
+export default SellerStore;

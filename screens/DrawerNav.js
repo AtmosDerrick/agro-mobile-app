@@ -12,10 +12,10 @@ const DrawerNav = () => {
 
   const renderHeaderRight = () => (
     <View
-      style={{ flexDirection: "row", alignItems: "center", marginRight: 16 }}>
-      <View className="mr-4">
+      style={{ flexDirection: "row", alignItems: "center", marginRight: 6 }}>
+      <TouchableOpacity className="mr-4">
         <FontAwesomeIcon name="bell" size={20} color="white" />
-      </View>
+      </TouchableOpacity>
       <Image
         source={require("../images/driver.jpg")} // Replace with the path to your profile image
         style={{ width: 30, height: 30, borderRadius: 15, marginRight: 8 }}

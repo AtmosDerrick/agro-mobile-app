@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -10,6 +10,29 @@ import IonIcon from "react-native-vector-icons/Ionicons";
 import Entypo from "@expo/vector-icons/Entypo";
 
 import Buys from "./Buys";
+import ProductForm from "./Sell";
+import SellDetails from "./SellDetails";
+
+const CustomTitleComponent = () => {
+  // Your custom component logic goes here
+  return (
+    <View
+      style={{ flexDirection: "row", alignItems: "center", marginRight: 24 }}>
+      <View className="w-full">
+        <Text style={{ color: "#fff", fontWeight: "bold", marginRight: 5 }}>
+          Farm Tools & Materials
+        </Text>
+      </View>
+      <View>
+        <View className=" w-full mr-4">
+          <TouchableOpacity>
+            <FontAwesomeIcon name="shopping-cart" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
+};
 
 const Home = ({ navigate }) => {
   const Tab = createBottomTabNavigator();
@@ -36,7 +59,7 @@ const Home = ({ navigate }) => {
         name="Buy"
         component={Buys}
         options={{
-          title: "Farm Tools & Materials",
+          headerTitle: (props) => <CustomTitleComponent {...props} />,
 
           headerTitleAlign: "left",
           headerStyle: {
@@ -52,7 +75,26 @@ const Home = ({ navigate }) => {
           tabBarShowLabel: false,
         }}
       />
-      <Tab.Screen name="sell" component={Buys} />
+      <Tab.Screen
+        name="sell"
+        component={SellDetails}
+        options={{
+          title: "Grow Your Agro Products",
+
+          headerTitleAlign: "left",
+          headerStyle: {
+            backgroundColor: "green",
+          },
+          headerTintColor: "#fff",
+          textAlign: "left",
+
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+          tabBarLabel: () => null, // Set tabBarLabel to a function that returns null
+          tabBarShowLabel: false,
+        }}
+      />
       <Tab.Screen name="Deliveries" component={Buys} />
       <Tab.Screen name="Map" component={Buys} />
     </Tab.Navigator>
