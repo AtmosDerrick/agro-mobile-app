@@ -17,16 +17,19 @@ import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 
 import Store from "../components/Store";
 import SellerStore from "../components/SellerStore";
+import ProductForm from "./Sell";
+import Order from "./Order";
 
 const SellDetails = () => {
   const [searchActive, SetSearchActive] = useState(false);
+  const [menuClick, setMenuClick] = useState("products");
 
   const dismissKeyboard = () => {
     Keyboard.dismiss();
   };
   return (
     <KeyboardAvoidingView onPress={dismissKeyboard} className="w-full h-full">
-      <View className="flex-row justify-between ml-2 shadow-md">
+      <View className="flex-row justify-between pl-2  shadow-md gap-x-2 ">
         {
           // <View
           // className={
@@ -63,6 +66,31 @@ const SellDetails = () => {
         <TouchableOpacity
           className={
             searchActive
+              ? "bg-green-500  px-4 flex-row justify-center items-center mt-2 mr-4 rounded-full shadow-md "
+              : "bg-green-500   flex-row justify-center items-center mt-2 mr-4 rounded-md py-2 px-2 "
+          }
+          onPress={() => {
+            setMenuClick("products");
+          }}>
+          {searchActive ? (
+            <Text className="text-lg font-semibold text-white rounded-full ">
+              +
+            </Text>
+          ) : (
+            <View className="flex-row justify-between items-center gap-2">
+              <FontAwesomeIcon
+                name="gift"
+                size={searchActive ? 20 : 24}
+                color={"white"}
+              />
+              <Text>Product</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className={
+            searchActive
               ? "bg-green-500  px-4 flex-row justify-center items-center mt-2 rounded-full shadow-md "
               : "bg-green-500   flex-row justify-center items-center mt-2  rounded-md py-2 px-6 "
           }>
@@ -75,7 +103,7 @@ const SellDetails = () => {
                 size={searchActive ? 20 : 24}
                 color={"white"}
               />
-              <Text>Order</Text>
+              <Text>Orders</Text>
             </View>
           )}
         </TouchableOpacity>
@@ -83,27 +111,29 @@ const SellDetails = () => {
         <TouchableOpacity
           className={
             searchActive
-              ? "bg-green-500  px-4 flex-row justify-center items-center mt-2 mr-4 rounded-full shadow-md "
-              : "bg-green-500   flex-row justify-center items-center mt-2 mr-4 rounded-md py-2 px-6 "
-          }>
+              ? "bg-green-500  px-4 flex-row justify-center items-center mt-2 rounded-full shadow-md "
+              : "  flex-row justify-center items-center mt-2  rounded-md py-2 px-2 mr-4 bg-orange-800 "
+          }
+          onPress={() => {
+            setMenuClick("add");
+          }}>
           {searchActive ? (
-            <Text className="text-lg font-semibold text-white rounded-full ">
-              +
-            </Text>
+            ""
           ) : (
             <View className="flex-row justify-between items-center gap-2">
               <FontAwesomeIcon
-                name="shopping-cart"
+                name="plus"
                 size={searchActive ? 20 : 24}
                 color={"white"}
               />
-              <Text>Sell Product</Text>
             </View>
           )}
         </TouchableOpacity>
       </View>
       <View className="mt-4 ">
-        <SellerStore />
+        {menuClick === "products" && <SellerStore />}
+        {menuClick === "add" && <ProductForm />}
+        {menuClick === "orders" && <Order />}
       </View>
     </KeyboardAvoidingView>
   );
