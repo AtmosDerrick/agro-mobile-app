@@ -89,14 +89,14 @@ const Store = ({ navigation }) => {
             className="w-[155px] h-[155px] rounded-xl "
           />
         </View>
-        <View className="mt-2">
-          <Text style={styles.price}>
+        <View className="mb-2">
+          <Text className="text-green-500 text-sm font-semibold">
             <Text>{`Gh\u20B5`}</Text>
             {item.price}
           </Text>
-          <Text className="py-1 font-medium text-base">{item.productName}</Text>
+          <Text className=" font-medium text-base">{item.productName}</Text>
           <Text className="text-xs mt-[-2px]">{item.location}</Text>
-          <Text style={styles.status} className="py-1">
+          <Text style={styles.status} className="mb-2">
             {item.serviceType}
           </Text>
         </View>
@@ -105,13 +105,15 @@ const Store = ({ navigation }) => {
   );
 
   return (
-    <FlatList
-      data={products}
-      renderItem={renderItem}
-      keyExtractor={(item) => item.id.toString()}
-      numColumns={2} // Set the number of columns to 2 for a two-column grid
-      contentContainerStyle={styles.flatListContainer}
-    />
+    <View className="pb-12">
+      <FlatList
+        data={products}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id.toString()}
+        numColumns={2} // Set the number of columns to 2 for a two-column grid
+        contentContainerStyle={styles.flatListContainer}
+      />
+    </View>
   );
 };
 

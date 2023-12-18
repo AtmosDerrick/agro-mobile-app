@@ -2,20 +2,16 @@ import React from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-
-import IonIcon from "react-native-vector-icons/Ionicons";
-
 import Entypo from "@expo/vector-icons/Entypo";
 
 import Buys from "./Buys";
-import ProductForm from "./Sell";
 import SellDetails from "./SellDetails";
 import SocialMedia from "./SocialMedia";
+import Experts from "./Experts";
+import ExpertChats from "./ExpertChats";
 
 const CustomTitleComponent = () => {
-  // Your custom component logic goes here
   return (
     <View
       style={{ flexDirection: "row", alignItems: "center", marginRight: 24 }}>
@@ -37,25 +33,36 @@ const CustomTitleComponent = () => {
 
 const Home = ({ navigate }) => {
   const Tab = createBottomTabNavigator();
+
   return (
     <Tab.Navigator
+      tabBarOptions={{
+        activeTintColor: "green", // Change the color when the tab is active
+        inactiveTintColor: "gray", // Change the color when the tab is inactive
+      }}
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
-          let iconName;
+          let iconComponent;
 
           if (route.name === "Buy") {
-            return (
-              <FontAwesomeIcon name="shopping-cart" size={24} color="green" />
+            iconComponent = (
+              <FontAwesomeIcon name="shopping-cart" size={24} color={color} />
             );
           } else if (route.name === "sell") {
-            return <MaterialIcons name="money" size={24} color="green" />;
-          } else if (route.name === "media") {
-            return (
-              <FontAwesomeIcon name="slideshare" size={24} color="green" />
+            iconComponent = (
+              <FontAwesomeIcon name="tag" size={24} color={color} />
             );
-          } else if (route.name === "Map") {
-            return <Icon name="message" size={24} color="green" />;
+          } else if (route.name === "media") {
+            iconComponent = (
+              <FontAwesomeIcon name="slideshare" size={24} color={color} />
+            );
+          } else if (route.name === "Experts") {
+            iconComponent = (
+              <Entypo name="help-with-circle" size={24} color={color} />
+            );
           }
+
+          return iconComponent;
         },
       })}>
       <Tab.Screen
@@ -63,18 +70,15 @@ const Home = ({ navigate }) => {
         component={Buys}
         options={{
           headerTitle: (props) => <CustomTitleComponent {...props} />,
-
           headerTitleAlign: "left",
           headerStyle: {
             backgroundColor: "green",
           },
           headerTintColor: "#fff",
           textAlign: "left",
-
           headerTitleStyle: {
             fontWeight: "bold",
           },
-          tabBarLabel: () => null, // Set tabBarLabel to a function that returns null
           tabBarShowLabel: false,
         }}
       />
@@ -83,19 +87,18 @@ const Home = ({ navigate }) => {
         component={SellDetails}
         options={{
           title: "Grow Your Agro Products",
-
           headerTitleAlign: "left",
           headerStyle: {
             backgroundColor: "green",
           },
           headerTintColor: "#fff",
           textAlign: "left",
-
           headerTitleStyle: {
             fontWeight: "bold",
           },
-          tabBarLabel: () => null, // Set tabBarLabel to a function that returns null
+          tabBarLabel: () => null,
           tabBarShowLabel: false,
+          tabBarBadge: 5,
         }}
       />
       <Tab.Screen
@@ -103,22 +106,39 @@ const Home = ({ navigate }) => {
         component={SocialMedia}
         options={{
           title: "Share your Ideas",
-
           headerTitleAlign: "left",
           headerStyle: {
             backgroundColor: "green",
           },
           headerTintColor: "#fff",
           textAlign: "left",
-
           headerTitleStyle: {
             fontWeight: "bold",
           },
-          tabBarLabel: () => null, // Set tabBarLabel to a function that returns null
+          tabBarLabel: () => null,
           tabBarShowLabel: false,
+          tabBarBadge: 2,
         }}
       />
-      <Tab.Screen name="Map" component={Buys} />
+      <Tab.Screen
+        name="Experts"
+        component={ExpertChats}
+        options={{
+          title: "Get Helped",
+          headerTitleAlign: "left",
+          headerStyle: {
+            backgroundColor: "green",
+          },
+          headerTintColor: "#fff",
+          textAlign: "left",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+          tabBarLabel: () => null,
+          tabBarShowLabel: false,
+          tabBarBadge: 3,
+        }}
+      />
     </Tab.Navigator>
   );
 };
