@@ -17,9 +17,13 @@ import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 
 import Store from "../components/Store";
 
-const Buys = () => {
+const Buys = ({ navigation }) => {
   const dismissKeyboard = () => {
     Keyboard.dismiss();
+  };
+
+  const handleNavigate = () => {
+    navigation.navigate("oneproduct");
   };
   return (
     <TouchableWithoutFeedback
@@ -37,7 +41,7 @@ const Buys = () => {
         </View>
       </View>
       <View className="mt-4 ">
-        <Store />
+        <Store handleNavigate={handleNavigate} />
       </View>
     </TouchableWithoutFeedback>
   );

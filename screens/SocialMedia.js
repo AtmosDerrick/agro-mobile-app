@@ -12,7 +12,7 @@ import {
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 import Fontisto from "react-native-vector-icons/Fontisto";
 
-const SocialMedia = () => {
+const SocialMedia = ({ navigation }) => {
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [selectedTweetId, setSelectedTweetId] = useState(null);
 
@@ -112,7 +112,11 @@ const SocialMedia = () => {
   };
 
   const renderItem = ({ item, index }) => (
-    <View className="bg-[#f0f0f0] my-4 border-b-[0.2px] pb-2 border-b-gray-400 ">
+    <TouchableOpacity
+      className="bg-[#f0f0f0] my-4 border-b-[0.2px] pb-2 border-b-gray-400 "
+      onPress={() => {
+        navigation.navigate("onetweet");
+      }}>
       <View className="flex-row gap-x-1 ">
         <Image
           source={item.profileImage}
@@ -142,7 +146,7 @@ const SocialMedia = () => {
                 onPress={() => handleLikePress(index)}>
                 <Fontisto
                   name={likeStates[index] ? "like" : "like"}
-                  size={15}
+                  size={20}
                   color={likeStates[index] ? "blue" : "gray"}
                 />
                 <Text>{item.likes}</Text>
@@ -163,7 +167,7 @@ const SocialMedia = () => {
                 onPress={() => handleBookmarkPress(index)}>
                 <Fontisto
                   name={bookmarkStates[index] ? "bookmark-alt" : "bookmark"}
-                  size={15}
+                  size={20}
                   color={bookmarkStates[index] ? "blue" : "gray"}
                 />
               </TouchableOpacity>
@@ -178,7 +182,7 @@ const SocialMedia = () => {
               style={styles.commentInput}
               placeholder="Write a comment..."
               multiline
-              maxLength={10}
+              maxLength={20}
             />
           </View>
           <TouchableOpacity>
@@ -186,7 +190,7 @@ const SocialMedia = () => {
           </TouchableOpacity>
         </View>
       )}
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -196,7 +200,11 @@ const SocialMedia = () => {
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
       />
-      <TouchableOpacity className="  flex-row justify-center items-center mt-2  rounded-full py-4 px-4 shadow-lg mr-4 bg-green-600 absolute bottom-3 right-3">
+      <TouchableOpacity
+        className="  flex-row justify-center items-center mt-2  rounded-full py-4 px-4 shadow-lg mr-4 bg-green-600 absolute bottom-3 right-3"
+        onPress={() => {
+          navigation.navigate("addtweet");
+        }}>
         <View className="flex-row justify-between items-center gap-2">
           <FontAwesomeIcon name="plus" size={15} color={"white"} />
         </View>

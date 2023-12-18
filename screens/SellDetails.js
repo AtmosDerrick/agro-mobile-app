@@ -23,13 +23,14 @@ import Order from "./Order";
 const SellDetails = () => {
   const [searchActive, SetSearchActive] = useState(false);
   const [menuClick, setMenuClick] = useState("products");
+  const [activeMenu, setActiveMenu] = useState("products");
 
   const dismissKeyboard = () => {
     Keyboard.dismiss();
   };
   return (
     <KeyboardAvoidingView onPress={dismissKeyboard} className="w-full h-full">
-      <View className="flex-row justify-between px-4  shadow-md gap-x-2 py-2 ">
+      <View className="flex-row justify-between px-4  shadow-md gap-x-2 pb-4 mt-4">
         {
           // <View
           // className={
@@ -65,9 +66,9 @@ const SellDetails = () => {
 
         <TouchableOpacity
           className={
-            searchActive
-              ? "bg-green-500  px-4 flex-row justify-center items-center mt-2 mr-4 rounded-full shadow-md "
-              : "bg-green-500   flex-row justify-center items-center mt-2 mr-4 rounded-md py-2 px-2 "
+            menuClick == "products"
+              ? " shadow-md border-b-2 border-b-green-600 px-6"
+              : "text-green-500 flex-row justify-center items-center mt-2 mr-4  px-2 "
           }
           onPress={() => {
             setMenuClick("products");
@@ -81,7 +82,7 @@ const SellDetails = () => {
               <FontAwesomeIcon
                 name="gift"
                 size={searchActive ? 20 : 24}
-                color={"white"}
+                color={"green"}
               />
               <Text>Product</Text>
             </View>
@@ -90,9 +91,9 @@ const SellDetails = () => {
 
         <TouchableOpacity
           className={
-            searchActive
-              ? "bg-green-500  px-4 flex-row justify-center items-center mt-2 rounded-full shadow-md "
-              : "bg-green-500   flex-row justify-center items-center mt-2  rounded-md py-2 px-6 "
+            menuClick === "orders"
+              ? "   shadow-md border-b-2 border-b-green-600 px-6"
+              : "text-green-500   flex-row justify-center items-center mt-2  rounded-md px-6 "
           }
           onPress={() => {
             setMenuClick("orders");
@@ -104,7 +105,7 @@ const SellDetails = () => {
               <FontAwesomeIcon
                 name="money"
                 size={searchActive ? 20 : 24}
-                color={"white"}
+                color={"green"}
               />
               <Text>Orders</Text>
             </View>

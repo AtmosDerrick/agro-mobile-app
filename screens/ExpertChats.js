@@ -18,7 +18,7 @@ const img3 = require("../images/tweet3.jpg");
 const img4 = require("../images/tweet4.jpg");
 const img5 = require("../images/tweet5.jpg");
 
-const ExpertChats = () => {
+const ExpertChats = ({ navigation }) => {
   const agricultureExperts = [
     {
       id: 1,
@@ -65,7 +65,11 @@ const ExpertChats = () => {
   ];
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity className="flex-row justify-start gap-x-2 mt-4 bg-[#f0f0f0] my-4 border-b-[0.2px] pb-2 border-b-gray-400">
+    <TouchableOpacity
+      className="flex-row justify-start gap-x-2 mt-4 bg-[#f0f0f0] my-4 border-b-[0.2px] pb-2 border-b-gray-400"
+      onPress={() => {
+        navigation.navigate("message");
+      }}>
       <Image
         source={item.profilePicture}
         className=" w-[60px] h-[60px] rounded-xl "
@@ -109,7 +113,11 @@ const ExpertChats = () => {
             className="mx-2 w-5/6 py-3 px-2 text-gray-800"
           />
         </View>
-        <TouchableOpacity className=" flex-row justify-center items-center mt-2   rounded-full py-3 px-3 shadow-lg mr-4 bg-green-600 ">
+        <TouchableOpacity
+          className=" flex-row justify-center items-center mt-2   rounded-full py-3 px-3 shadow-lg mr-4 bg-green-600 "
+          onPress={() => {
+            navigation.navigate("addexperts");
+          }}>
           <View className="flex-row justify-between items-center gap-2">
             <MaterialIcons name="person-add" size={15} color={"white"} />
           </View>

@@ -2,7 +2,7 @@ import React from "react";
 import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 
-const Store = ({ navigation }) => {
+const Store = ({ handleNavigate }) => {
   const img1 = require("../images/img1.jpg");
   const img2 = require("../images/img2.jpg");
   const img3 = require("../images/img3.jpg");
@@ -81,7 +81,9 @@ const Store = ({ navigation }) => {
   ];
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity className="flex-row justify-between mx-3">
+    <TouchableOpacity
+      className="flex-row justify-between mx-3"
+      onPress={handleNavigate}>
       <View>
         <View className="w-[160px] h-[160px]">
           <Image

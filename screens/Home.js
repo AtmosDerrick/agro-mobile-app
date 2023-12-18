@@ -10,6 +10,9 @@ import SellDetails from "./SellDetails";
 import SocialMedia from "./SocialMedia";
 import Experts from "./Experts";
 import ExpertChats from "./ExpertChats";
+import BuyRoute from "../Routes/BuyRoute";
+import SocialMediaRoute from "../Routes/SocialMediaRoute";
+import ExpertRoute from "../Routes/ExpertRoute";
 
 const CustomTitleComponent = () => {
   return (
@@ -67,7 +70,7 @@ const Home = ({ navigate }) => {
       })}>
       <Tab.Screen
         name="Buy"
-        component={Buys}
+        component={BuyRoute}
         options={{
           headerTitle: (props) => <CustomTitleComponent {...props} />,
           headerTitleAlign: "left",
@@ -103,7 +106,7 @@ const Home = ({ navigate }) => {
       />
       <Tab.Screen
         name="media"
-        component={SocialMedia}
+        component={SocialMediaRoute}
         options={{
           title: "Share your Ideas",
           headerTitleAlign: "left",
@@ -122,7 +125,7 @@ const Home = ({ navigate }) => {
       />
       <Tab.Screen
         name="Experts"
-        component={ExpertChats}
+        component={ExpertRoute}
         options={{
           title: "Get Helped",
           headerTitleAlign: "left",
