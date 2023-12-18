@@ -12,6 +12,7 @@ import Entypo from "@expo/vector-icons/Entypo";
 import Buys from "./Buys";
 import ProductForm from "./Sell";
 import SellDetails from "./SellDetails";
+import SocialMedia from "./SocialMedia";
 
 const CustomTitleComponent = () => {
   // Your custom component logic goes here
@@ -48,8 +49,10 @@ const Home = ({ navigate }) => {
             );
           } else if (route.name === "sell") {
             return <MaterialIcons name="money" size={24} color="green" />;
-          } else if (route.name === "Deliveries") {
-            return <FontAwesomeIcon name="book" size={24} color="green" />;
+          } else if (route.name === "media") {
+            return (
+              <FontAwesomeIcon name="slideshare" size={24} color="green" />
+            );
           } else if (route.name === "Map") {
             return <Icon name="message" size={24} color="green" />;
           }
@@ -95,7 +98,26 @@ const Home = ({ navigate }) => {
           tabBarShowLabel: false,
         }}
       />
-      <Tab.Screen name="Deliveries" component={Buys} />
+      <Tab.Screen
+        name="media"
+        component={SocialMedia}
+        options={{
+          title: "Share your Ideas",
+
+          headerTitleAlign: "left",
+          headerStyle: {
+            backgroundColor: "green",
+          },
+          headerTintColor: "#fff",
+          textAlign: "left",
+
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+          tabBarLabel: () => null, // Set tabBarLabel to a function that returns null
+          tabBarShowLabel: false,
+        }}
+      />
       <Tab.Screen name="Map" component={Buys} />
     </Tab.Navigator>
   );

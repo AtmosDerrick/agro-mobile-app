@@ -35,6 +35,8 @@ const ProductForm = () => {
   // Stores any error message
   const [error, setError] = useState(null);
 
+  console.log("worrking or not");
+
   const regionsInGhana = [
     "Greater Accra",
     "Ashanti",
@@ -53,13 +55,13 @@ const ProductForm = () => {
     value: region,
   }));
 
-  const selectServiceType = (value) => {
-    setServiceType(value);
-  };
+  //   const selectServiceType = (value) => {
+  //     setServiceType(value);
+  //   };
 
-  const selectRegion = (value) => {
-    setRegion(value);
-  };
+  //   const selectRegion = (value) => {
+  //     setRegion(value);
+  //   };
 
   useEffect(() => {
     checkMediaLibraryPermission();
@@ -125,12 +127,13 @@ const ProductForm = () => {
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flex: 1 }}
-      className="mx-4">
+      className="mx-0 mt-4">
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
-          paddingBottom: keyboardHeight + 10, // Adjust the padding bottom as needed
+          paddingBottom: 5 + keyboardHeight, // Adjust the padding bottom as needed
         }}
+        className="mx-4"
         keyboardShouldPersistTaps="handled">
         <View className="mt-2">
           <DropdownSelect

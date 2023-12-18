@@ -29,7 +29,7 @@ const SellDetails = () => {
   };
   return (
     <KeyboardAvoidingView onPress={dismissKeyboard} className="w-full h-full">
-      <View className="flex-row justify-between pl-2  shadow-md gap-x-2 ">
+      <View className="flex-row justify-between px-4  shadow-md gap-x-2 py-2 ">
         {
           // <View
           // className={
@@ -93,7 +93,10 @@ const SellDetails = () => {
             searchActive
               ? "bg-green-500  px-4 flex-row justify-center items-center mt-2 rounded-full shadow-md "
               : "bg-green-500   flex-row justify-center items-center mt-2  rounded-md py-2 px-6 "
-          }>
+          }
+          onPress={() => {
+            setMenuClick("orders");
+          }}>
           {searchActive ? (
             ""
           ) : (
@@ -107,34 +110,37 @@ const SellDetails = () => {
             </View>
           )}
         </TouchableOpacity>
+      </View>
 
-        <TouchableOpacity
-          className={
-            searchActive
-              ? "bg-green-500  px-4 flex-row justify-center items-center mt-2 rounded-full shadow-md "
-              : "  flex-row justify-center items-center mt-2  rounded-md py-2 px-2 mr-4 bg-orange-800 "
-          }
-          onPress={() => {
-            setMenuClick("add");
-          }}>
-          {searchActive ? (
-            ""
-          ) : (
-            <View className="flex-row justify-between items-center gap-2">
-              <FontAwesomeIcon
-                name="plus"
-                size={searchActive ? 20 : 24}
-                color={"white"}
-              />
-            </View>
-          )}
-        </TouchableOpacity>
-      </View>
-      <View className="mt-4 ">
-        {menuClick === "products" && <SellerStore />}
-        {menuClick === "add" && <ProductForm />}
-        {menuClick === "orders" && <Order />}
-      </View>
+      {menuClick === "products" ? (
+        <SellerStore />
+      ) : menuClick == "add" ? (
+        <ProductForm />
+      ) : (
+        <Order />
+      )}
+
+      <TouchableOpacity
+        className={
+          searchActive
+            ? "bg-green-500  px-4 flex-row justify-center items-center mt-2 rounded-full shadow-md "
+            : "  flex-row justify-center items-center mt-2  rounded-full py-3 px-3 shadow-lg mr-4 bg-green-600 absolute bottom-3 right-3"
+        }
+        onPress={() => {
+          setMenuClick("add");
+        }}>
+        {searchActive ? (
+          ""
+        ) : (
+          <View className="flex-row justify-between items-center gap-2">
+            <FontAwesomeIcon
+              name="plus"
+              size={searchActive ? 20 : 24}
+              color={"white"}
+            />
+          </View>
+        )}
+      </TouchableOpacity>
     </KeyboardAvoidingView>
   );
 };
