@@ -8,8 +8,14 @@ const BuyRoute = () => {
   const Stack = createNativeStackNavigator();
 
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="buyfrontpage" component={Buys} />
+    <Stack.Navigator>
+      <Stack.Screen
+        name="buyfrontpage"
+        component={Buys}
+        options={{
+          headerShown: false,
+        }}
+      />
       <Stack.Screen name="oneproduct" component={BuyProduct} />
     </Stack.Navigator>
   );

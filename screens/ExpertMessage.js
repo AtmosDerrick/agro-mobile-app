@@ -229,62 +229,64 @@ const ExpertMessage = ({ navigation }) => {
 
   return (
     <KeyboardAvoidingView
-      className=" bg-white mb-12"
+      className=" bg-white pb-0"
       behavior={Platform.OS === "ios" ? "height" : undefined}>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: 8,
-          borderBottomColor: "#ccc",
-          borderBottomWidth: 1,
-        }}>
-        <View className="flex-row justify-start items-center gap-x-2">
-          <Image
-            source={expert.profilePicture}
-            className=" w-[60px] h-[60px] rounded-xl "
-          />
-          <View>
-            <Text className="font-semibold">{expert.name}</Text>
-            <Text className="text-xs text-green-500">{expert.group}</Text>
+      <ScrollView>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: 8,
+            borderBottomColor: "#ccc",
+            borderBottomWidth: 1,
+          }}>
+          <View className="flex-row justify-start items-center gap-x-2">
+            <Image
+              source={expert.profilePicture}
+              className=" w-[50px] h-[50px] rounded-xl "
+            />
+            <View>
+              <Text className="font-semibold">{expert.name}</Text>
+              <Text className="text-xs text-green-500">{expert.group}</Text>
+            </View>
+          </View>
+          <View style={{ flexDirection: "row", gap: 16 }}>
+            <TouchableOpacity className="p-3 bg-green-600 rounded-full">
+              <MaterialIcons name="call" size={24} color={"white"} />
+            </TouchableOpacity>
           </View>
         </View>
-        <View style={{ flexDirection: "row", gap: 16 }}>
-          <TouchableOpacity className="p-3 bg-green-600 rounded-full">
-            <MaterialIcons name="call" size={24} color={"white"} />
-          </TouchableOpacity>
+        <ScrollView className="mb-8">
+          <View>
+            <FlatList
+              data={messages}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.date + item.time}
+            />
+          </View>
+        </ScrollView>
+      </ScrollView>
+      <View className="absolute bottom-8 pt-2 shadow-md  z-30 bg-gray-50  mt-4 h-20  ">
+        <View className="  z-20 flex-row justify-between items-center px-4 bg-gray-50">
+          <View>
+            <TouchableOpacity>
+              <MaterialIcons name="image" size={20} color="green" />
+            </TouchableOpacity>
+          </View>
+
+          <TextInput
+            placeholder="Search"
+            className="mx-2 py-3 px-2 text-gray-800 border-2 w-5/6 border-gray-400 rounded-full"
+          />
+
+          <View>
+            <TouchableOpacity>
+              <MaterialIcons name="send" size={20} color="green" />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-      <ScrollView className="mb-16">
-        <View>
-          <FlatList
-            data={messages}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.date + item.time}
-          />
-        </View>
-        <View className="absolute bottom-12 pt-2 shadow-md  z-30 bg-gray-50  mt-4  ">
-          <View className="  z-20 flex-row justify-between items-center px-4 bg-gray-50">
-            <View>
-              <TouchableOpacity>
-                <MaterialIcons name="image" size={20} color="green" />
-              </TouchableOpacity>
-            </View>
-
-            <TextInput
-              placeholder="Search"
-              className="mx-2 py-3 px-2 text-gray-800 border-2 w-5/6 border-gray-400 rounded-full"
-            />
-
-            <View>
-              <TouchableOpacity>
-                <MaterialIcons name="send" size={20} color="green" />
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </ScrollView>
     </KeyboardAvoidingView>
   );
 };
@@ -294,7 +296,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-end",
     alignItems: "flex-end",
-    marginVertical: 8,
+    marginVertical: 0,
     marginRight: 16,
   },
   receiverContainer: {

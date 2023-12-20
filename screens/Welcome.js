@@ -19,11 +19,12 @@ const Welcome = ({ navigation }) => {
             Agro Solutions
           </Text>
         </View>
+
         <View className="w-full   flex justify-end">
           <TouchableOpacity
             className="relative mb-20   mx-2   bg-white py-4 shadow-md px-6 rounded-lg "
             onPress={() => {
-              navigation.navigate("Home");
+              navigation.navigate("login");
             }}>
             <Text className="text-center font-semibold text-green-500 ">
               Let Get Started

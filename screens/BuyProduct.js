@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, StyleSheet, Image, Text, Pressable } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
-const BuyProduct = () => {
+const BuyProduct = ({ navigation }) => {
   const img2 = require("../images/img2.jpg");
 
   const product = {
@@ -27,6 +27,16 @@ const BuyProduct = () => {
       country: "Country",
     },
   };
+
+  useEffect(() => {
+    navigation.getParent()?.setOptions({
+      headerShown: false,
+    });
+    return () =>
+      navigation.getParent()?.setOptions({
+        headerShown: false,
+      });
+  }, [navigation]);
 
   return (
     <ScrollView className="w-full bg-gray-200 mb-4 ">
