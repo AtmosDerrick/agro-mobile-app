@@ -60,6 +60,16 @@ const ExpertMessage = ({ navigation }) => {
 
   useEffect(() => {
     navigation.getParent()?.setOptions({
+      headerShown: false,
+    });
+    return () =>
+      navigation.getParent()?.setOptions({
+        headerShown: false,
+      });
+  }, [navigation]);
+
+  useEffect(() => {
+    navigation.getParent()?.setOptions({
       tabBarStyle: {
         display: "none",
       },
@@ -229,9 +239,9 @@ const ExpertMessage = ({ navigation }) => {
 
   return (
     <KeyboardAvoidingView
-      className=" bg-white pb-0"
+      className=" bg-white "
       behavior={Platform.OS === "ios" ? "height" : undefined}>
-      <ScrollView>
+      <ScrollView keyboardShouldPersistTaps="handled">
         <View
           style={{
             flexDirection: "row",
@@ -267,7 +277,7 @@ const ExpertMessage = ({ navigation }) => {
           </View>
         </ScrollView>
       </ScrollView>
-      <View className="absolute bottom-8 pt-2 shadow-md  z-30 bg-gray-50  mt-4 h-20  ">
+      <View className="absolute bottom-0 pt-2 shadow-md  z-30 bg-gray-50  mt-4 h-20  ">
         <View className="  z-20 flex-row justify-between items-center px-4 bg-gray-50">
           <View>
             <TouchableOpacity>
@@ -296,7 +306,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-end",
     alignItems: "flex-end",
-    marginVertical: 0,
+    marginVertical: 8,
     marginRight: 16,
   },
   receiverContainer: {

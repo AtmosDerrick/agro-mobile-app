@@ -16,7 +16,11 @@ const BuyRoute = () => {
           headerShown: false,
         }}
       />
-      <Stack.Screen name="oneproduct" component={BuyProduct} />
+      <Stack.Screen
+        name="oneproduct"
+        component={BuyProduct}
+        options={{ title: "Product" }}
+      />
     </Stack.Navigator>
   );
 };

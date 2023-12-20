@@ -20,18 +20,28 @@ const Login = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const handleLogin = () => {
     // Add your login logic here
-    if (username == "test" && password == "test") {
-      console.log("Username:", username);
-      console.log("Password:", password);
-      navigation.navigate("Home");
-      setUsername("");
-      setPassword("");
+    if (username != "" || password != "") {
+      if (username == "test" && password == "test") {
+        console.log("Username:", username);
+        console.log("Password:", password);
+        navigation.navigate("Home");
+        setUsername("");
+        setPassword("");
+      } else {
+        setError(true);
+        setTimeout(() => {
+          setError(false);
+          setErrorMessage(" Invalide Credentials, Please Try again");
+        }, 3000);
+      }
     } else {
       setError(true);
       setTimeout(() => {
         setError(false);
+        setErrorMessage(" Please, Enter you Credentials");
       }, 3000);
     }
   };
@@ -50,7 +60,7 @@ const Login = ({ navigation }) => {
           {error ? (
             <View className="mx-2">
               <Text className="text-red-500 font-semibold text-center">
-                Invalide Credentials, Please Try again
+                {errorMessage}
               </Text>
             </View>
           ) : (

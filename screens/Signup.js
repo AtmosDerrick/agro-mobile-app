@@ -33,7 +33,7 @@ const Signup = ({ navigation }) => {
     navigation.navigate("profile");
   };
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
       <SafeAreaView className="w-full h-full mb-12">
         <ScrollView
           contentContainerStyle={styles.container}

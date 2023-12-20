@@ -10,10 +10,30 @@ const SocialMediaRoute = () => {
   const Stack = createNativeStackNavigator();
 
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="socialmediamainpage" component={SocialMedia} />
-      <Stack.Screen name="addtweet" component={AddTweet} />
-      <Stack.Screen name="onetweet" component={OneTweet} />
+    <Stack.Navigator>
+      <Stack.Screen
+        name="socialmediamainpage"
+        component={SocialMedia}
+        options={{
+          title: "",
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="addtweet"
+        component={AddTweet}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="onetweet"
+        component={OneTweet}
+        options={{
+          title: "",
+          headerShown: true,
+        }}
+      />
     </Stack.Navigator>
   );
 };

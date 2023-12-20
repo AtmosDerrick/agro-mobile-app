@@ -10,10 +10,24 @@ const ExpertRoute = () => {
   const Stack = createNativeStackNavigator();
 
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="expertchat" component={ExpertChats} />
+    <Stack.Navigator>
+      <Stack.Screen
+        name="expertchat"
+        component={ExpertChats}
+        options={{
+          title: "",
+          headerShown: false,
+        }}
+      />
       <Stack.Screen name="addexperts" component={Experts} />
-      <Stack.Screen name="message" component={ExpertMessage} />
+      <Stack.Screen
+        name="message"
+        component={ExpertMessage}
+        options={{
+          title: "Agro Solution",
+          headerShown: true,
+        }}
+      />
     </Stack.Navigator>
   );
 };

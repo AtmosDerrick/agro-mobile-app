@@ -39,11 +39,9 @@ const Home = ({ navigate }) => {
 
   return (
     <Tab.Navigator
-      tabBarOptions={{
+      screenOptions={({ route }) => ({
         activeTintColor: "green", // Change the color when the tab is active
         inactiveTintColor: "gray", // Change the color when the tab is inactive
-      }}
-      screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
           let iconComponent;
 

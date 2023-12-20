@@ -4,24 +4,18 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  Image,
-  KeyboardAvoidingView,
-  Pressable,
-  SafeAreaView,
-  Platform,
-  Keyboard,
   StyleSheet,
-  DatePickerIOS,
+  KeyboardAvoidingView,
+  ScrollView,
+  Image,
+  SafeAreaView,
 } from "react-native";
 import DropdownSelect from "react-native-input-select";
 import * as ImagePicker from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library";
-import { ScrollView } from "react-native-gesture-handler";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { Picker } from "@react-native-picker/picker";
-import DatePicker from "react-native-date-picker";
 
-const Profile = () => {
+const Profile = ({ navigation }) => {
   const [selectedImages, setSelectedImages] = useState(null);
   const [profileImages, setProfileImages] = useState(null);
   const [error, setError] = useState(null);
@@ -36,34 +30,12 @@ const Profile = () => {
     // Add your logic to save the profile
     console.log("Name:", name);
     console.log("Gender:", gender);
-    console.log("Birthdate:", birthdate.toISOString().split("T")[0]); // Format date as YYYY-MM-DD
     console.log("Location:", location);
     console.log("Agriculture Group:", agricultureGroup);
   };
 
   useEffect(() => {
     checkMediaLibraryPermission();
-
-    // Add listeners for keyboard show and hide events
-    const keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow",
-      (event) => {
-        setKeyboardHeight(event.endCoordinates.height);
-      }
-    );
-
-    const keyboardDidHideListener = Keyboard.addListener(
-      "keyboardDidHide",
-      () => {
-        setKeyboardHeight(0);
-      }
-    );
-
-    // Clean up listeners when component unmounts
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-    };
   }, []);
 
   const checkMediaLibraryPermission = async () => {
@@ -132,110 +104,176 @@ const Profile = () => {
     "py-2 px-3 border-b-[1px] mb-6 border-gray-700  text-gray-900";
 
   return (
-    <View>
-      <View>
-        <View className=" w-full h-[150px] border-b-2 border-b-gray-500">
-          <View
-            className={
-              selectedImages ? "flex-row justify-between items-center" : ""
-            }>
-            <TouchableOpacity
-              className="flex-row justify-start gap-2 rounded-lg"
-              onPress={pickMultipleImages}>
-              {selectedImages
-                ? selectedImages.map((imageUri, index) => (
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
+      <SafeAreaView className="w-full h-full mb-12">
+        <ScrollView contentContainerStyle={styles.container}>
+          <View>
+            <View className=" w-full h-[150px] border-b-2 border-b-gray-500">
+              <View
+                className={
+                  selectedImages ? "flex-row justify-between items-center" : ""
+                }>
+                <TouchableOpacity
+                  className="flex-row justify-start gap-2 rounded-lg"
+                  onPress={pickMultipleImages}>
+                  {selectedImages
+                    ? selectedImages.map((imageUri, index) => (
+                        <View className="w-full ">
+                          <Image
+                            key={index}
+                            source={{ uri: imageUri }}
+                            className="h-[150px] w-full bg-red-500 "
+                          />
+                        </View>
+                      ))
+                    : ""}
+                </TouchableOpacity>
+                {!selectedImages ? (
+                  <TouchableOpacity
+                    onPress={pickMultipleImages}
+                    className="absolute w-full">
+                    <View className="w-full h-[150px]   rounded-xl lex-row justify-center items-center">
+                      <View className="w-full">
+                        <Image
+                          source={require("../images/defaultcover.jpg")}
+                          className="w-[100%] h-[150px] rounded-xl "
+                        />
+                      </View>
+                      <View className="absolute">
+                        <Text className="text-lg font-semibold">
+                          Upload a Cover Image
+                        </Text>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                ) : (
+                  ""
+                )}
+              </View>
+            </View>
+            <View>
+              <View className="bg-white w-[100px] h-[100px] rounded-full ml-6 mt-[-35px] border-white border-4 ">
+                {profileImages ? (
+                  profileImages.map((imageUri, index) => (
                     <View className="w-full ">
                       <Image
                         key={index}
                         source={{ uri: imageUri }}
-                        className="h-[150px] w-full bg-red-500 "
+                        className="w-[90px] h-[90px]  rounded-full "
                       />
+                      <TouchableOpacity
+                        className="w-8 h-8 bg-green-600 flex-row justify-center items-center rounded-full absolute bottom-1 right-1 mr-[-12]"
+                        onPress={pickProfileImages}>
+                        <MaterialIcons name="add" size={24} color={"white"} />
+                      </TouchableOpacity>
                     </View>
                   ))
-                : ""}
-            </TouchableOpacity>
-            {!selectedImages ? (
-              <TouchableOpacity
-                onPress={pickMultipleImages}
-                className="absolute w-full">
-                <View className="w-full h-[150px]   rounded-xl lex-row justify-center items-center">
-                  <View className="w-full">
+                ) : (
+                  <View>
                     <Image
-                      source={require("../images/defaultcover.jpg")}
-                      className="w-[100%] h-[150px] rounded-xl "
+                      source={require("../images/defaultprofileimage.jpg")}
+                      className="w-[90px] h-[90px] rounded-full "
                     />
+                    <TouchableOpacity
+                      className="w-8 h-8 bg-green-600 flex-row justify-center items-center rounded-full absolute bottom-1 right-1 mr-[-12]"
+                      onPress={pickProfileImages}>
+                      <MaterialIcons name="add" size={24} color={"white"} />
+                    </TouchableOpacity>
                   </View>
-                  <View className="absolute">
-                    <Text className="text-lg font-semibold">
-                      Upload a Cover Image
-                    </Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            ) : (
-              ""
-            )}
-          </View>
-        </View>
-        <View>
-          <View className="bg-white w-[100px] h-[100px] rounded-full ml-6 mt-[-35px] border-white border-4 ">
-            {profileImages ? (
-              profileImages.map((imageUri, index) => (
-                <View className="w-full ">
-                  <Image
-                    key={index}
-                    source={{ uri: imageUri }}
-                    className="w-[90px] h-[90px]  rounded-full "
-                  />
-                  <TouchableOpacity
-                    className="w-8 h-8 bg-green-600 flex-row justify-center items-center rounded-full absolute bottom-1 right-1 mr-[-12]"
-                    onPress={pickProfileImages}>
-                    <MaterialIcons name="add" size={24} color={"white"} />
-                  </TouchableOpacity>
-                </View>
-              ))
-            ) : (
-              <View>
-                <Image
-                  source={require("../images/defaultprofileimage.jpg")}
-                  className="w-[90px] h-[90px] rounded-full "
-                />
-                <TouchableOpacity
-                  className="w-8 h-8 bg-green-600 flex-row justify-center items-center rounded-full absolute bottom-1 right-1 mr-[-12]"
-                  onPress={pickProfileImages}>
-                  <MaterialIcons name="add" size={24} color={"white"} />
-                </TouchableOpacity>
+                )}
               </View>
-            )}
+            </View>
           </View>
-        </View>
-      </View>
+          <View className="mx-4 mt-6">
+            <TextInput
+              className={inputClass}
+              placeholder="Name"
+              value={name}
+              onChangeText={setName}
+            />
 
-      <View className="mx-4 mt-6">
-        <TextInput
-          className={inputClass}
-          placeholder="Name"
-          value={name}
-          onChangeText={setName}
-        />
-        <DatePicker date={birthdate} onDateChange={setBirthdate} />
+            <TextInput
+              className={inputClass}
+              placeholder="Location"
+              value={location}
+              onChangeText={setLocation}
+            />
 
-        <Picker
-          style={styles.input}
-          selectedValue={gender}
-          onValueChange={(itemValue) => setGender(itemValue)}>
-          <Picker.Item label="Select Gender" value="" />
-          <Picker.Item label="Male" value="male" />
-          <Picker.Item label="Female" value="female" />
-          <Picker.Item label="Other" value="other" />
-              </Picker>
-              
-              
-      </View>
-    </View>
+            <View>
+              <View className="mt-2">
+                <DropdownSelect
+                  placeholder="Select Gender"
+                  options={[
+                    { name: "Male", code: "male" },
+                    { name: "Female", code: "female" },
+                  ]}
+                  optionLabel={"name"}
+                  optionValue={"code"}
+                  selectedValue={gender}
+                  onValueChange={(itemValue) => setGender(itemValue)}
+                  dropdownStyle={{
+                    paddingVertical: 5,
+                    paddingHorizontal: 10,
+                    minHeight: 50,
+                    borderColor: "gray",
+                  }}
+                />
+              </View>
+            </View>
+            <View>
+              <View className="mt-2">
+                <DropdownSelect
+                  placeholder="Select Category"
+                  options={[
+                    { name: "Crop Farming", code: "crop" },
+                    { name: "Animal Farming", code: "animal" },
+                    { name: "Fish Farming", code: "fish" },
+                    { name: "Poultry ", code: "poultry" },
+                  ]}
+                  optionLabel={"name"}
+                  optionValue={"code"}
+                  selectedValue={agricultureGroup}
+                  onValueChange={(itemValue) => setAgricultureGroup(itemValue)}
+                  dropdownStyle={{
+                    paddingVertical: 5,
+                    paddingHorizontal: 10,
+                    minHeight: 50,
+                    borderColor: "gray",
+                  }}
+                />
+              </View>
+            </View>
+          </View>
+          <View className="px-4">
+            <View className=" flex-row justify-between gap-x-4">
+              <TouchableOpacity
+                onPress={handleSave}
+                className="w-1/2  bg-green-600 py-3 rounded-lg mt-8">
+                <Text className="text-center text-white font-semibold text-base">
+                  Save
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate("Home");
+                }}
+                className="w-1/4  py-3 rounded-lg mt-8">
+                <Text className=" text-center text-gray-900 font-semibold text-base">
+                  Skip
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+  },
+});
 
 export default Profile;

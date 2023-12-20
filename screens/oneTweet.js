@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, Image, TouchableOpacity, TextInput } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
@@ -10,7 +10,7 @@ const img5 = require("../images/tweet5.jpg");
 const tweetimg1 = require("../images/tweetimage1.jpg");
 const tweetimg4 = require("../images/tweetimage4.jpg");
 
-const OneTweet = () => {
+const OneTweet = ({ navigation }) => {
   const tweet = {
     name: "John Doe",
     username: "@john_doe",
@@ -75,6 +75,15 @@ const OneTweet = () => {
     setRepliedBookmarkState(newbookmarkStates);
   };
 
+  useEffect(() => {
+    navigation.getParent()?.setOptions({
+      headerShown: false,
+    });
+    return () =>
+      navigation.getParent()?.setOptions({
+        headerShown: false,
+      });
+  }, [navigation]);
   return (
     <ScrollView>
       <View
