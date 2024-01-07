@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
 } from "react-native";
 
 const Welcome = ({ navigation }) => {
+  
   return (
     <ImageBackground
       source={require("../images/welcome.jpg")}

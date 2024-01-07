@@ -19,7 +19,14 @@ const ExpertRoute = () => {
           headerShown: false,
         }}
       />
-      <Stack.Screen name="addexperts" component={Experts} />
+      <Stack.Screen
+        name="addexperts"
+        component={Experts}
+        options={{
+          title: "",
+          headerShown: true,
+        }}
+      />
       <Stack.Screen
         name="message"
         component={ExpertMessage}

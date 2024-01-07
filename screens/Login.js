@@ -15,14 +15,26 @@ import {
   Pressable,
 } from "react-native";
 import { err } from "react-native-svg";
+import axios from "axios";
 
 const Login = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const handleLogin = () => {
+  const handleLogin = async () => {
+    //http://192.168.100.100:8000/auth/test
     // Add your login logic here
+
+    await axios
+      .get(`http:// LOG  [AxiosError: timeout exceeded]:8000/auth/test/`)
+      .then((res) => {
+        console.log(res);
+        console.log(res.data);
+        console.log("running");
+      })
+      .catch((error) => console.log(error));
+
     if (username != "" || password != "") {
       if (username == "test" && password == "test") {
         console.log("Username:", username);
