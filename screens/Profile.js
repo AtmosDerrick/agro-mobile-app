@@ -15,23 +15,122 @@ import * as ImagePicker from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
+import "../firebaseConfig";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getDatabase, ref, child, push, update, get } from "firebase/database";
 const Profile = ({ navigation }) => {
   const [selectedImages, setSelectedImages] = useState(null);
   const [profileImages, setProfileImages] = useState(null);
   const [error, setError] = useState(null);
 
-  const [name, setName] = useState("");
   const [gender, setGender] = useState("");
-  const [birthdate, setBirthdate] = useState(new Date());
-  const [location, setLocation] = useState("");
+  const [town, settown] = useState("");
+  const [selectedRegion, setSelectedRegion] = useState(null);
   const [agricultureGroup, setAgricultureGroup] = useState("");
+  const [user, setUser] = useState("");
+
+  const [userdata, setUserData] = useState({
+    email: "",
+    firstName: "",
+    lastName: "",
+    username: "",
+  });
+
+  const db = getDatabase();
+  const dbRef = ref(getDatabase());
+
+  useEffect(() => {
+    //getting user
+    const auth = getAuth();
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const userEmail = user.email;
+        setUser(userEmail);
+      } else {
+        // User is signed out
+        console.log("user is logout");
+        // ...
+      }
+    });
+  }, [user]);
+
+  const regionsInGhana = [
+    { name: "Greater Accra", code: "greater_accra" },
+    { name: "Ashanti", code: "ashanti" },
+    { name: "Brong-Ahafo", code: "brong_ahafo" },
+    { name: "Central", code: "central" },
+    { name: "Eastern", code: "eastern" },
+    { name: "Northern", code: "northern" },
+    { name: "Upper East", code: "upper_east" },
+    { name: "Upper West", code: "upper_west" },
+    { name: "Volta", code: "volta" },
+    { name: "Western", code: "western" },
+    { name: "Western North", code: "western_north" },
+    { name: "Ahafo", code: "ahafo" },
+    { name: "Bono", code: "bono" },
+    { name: "Bono East", code: "bono_east" },
+    { name: "Central East", code: "central_east" },
+    { name: "Central West", code: "central_west" },
+    { name: "North East", code: "north_east" },
+    { name: "Oti", code: "oti" },
+    { name: "Savannah", code: "savannah" },
+    { name: "Western South", code: "western_south" },
+    // Add more regions as needed
+  ];
 
   const handleSave = () => {
     // Add your logic to save the profile
-    console.log("Name:", name);
+
     console.log("Gender:", gender);
-    console.log("Location:", location);
+    console.log("Location:", selectedRegion);
+
+    console.log("Location:", town);
     console.log("Agriculture Group:", agricultureGroup);
+
+    const splitEmail = user.split("@")[0];
+    console.log(splitEmail);
+
+    get(child(dbRef, `users/${splitEmail}`))
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const updates = {};
+          updates[`/users/${splitEmail}`] = {
+            firstName: data.firstName,
+            lastName: data.lastName,
+            email: data.email,
+            username: data.username,
+            profileImg: "",
+            coverImage: "",
+            category: agricultureGroup,
+            city: town,
+            gender,
+            region: selectedRegion,
+          };
+
+          // Update the Firebase database with the 'updates' object
+          update(ref(db), updates)
+            .then(() => {
+              console.log("Data edit successfully");
+            })
+            .catch((error) => {
+              console.error("Error deleting data:", error);
+            });
+
+          setUserData({
+            email: data.email,
+            firstName: data.firstName,
+            lastName: data.firstName,
+            username: data.username,
+          });
+        } else {
+          console.log("No data available");
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   useEffect(() => {
@@ -185,18 +284,27 @@ const Profile = ({ navigation }) => {
             </View>
           </View>
           <View className="mx-4 mt-6">
+            <View className="mt-2">
+              <DropdownSelect
+                placeholder="Select Region"
+                options={regionsInGhana}
+                optionLabel={"name"}
+                optionValue={"code"}
+                selectedValue={selectedRegion}
+                onValueChange={(itemValue) => setSelectedRegion(itemValue)}
+                dropdownStyle={{
+                  paddingVertical: 5,
+                  paddingHorizontal: 10,
+                  minHeight: 50,
+                  borderColor: "gray",
+                }}
+              />
+            </View>
             <TextInput
               className={inputClass}
-              placeholder="Name"
-              value={name}
-              onChangeText={setName}
-            />
-
-            <TextInput
-              className={inputClass}
-              placeholder="Location"
-              value={location}
-              onChangeText={setLocation}
+              placeholder="Town"
+              value={town}
+              onChangeText={settown}
             />
 
             <View>
@@ -224,6 +332,7 @@ const Profile = ({ navigation }) => {
               <View className="mt-2">
                 <DropdownSelect
                   placeholder="Select Category"
+                  isMultiple
                   options={[
                     { name: "Crop Farming", code: "crop" },
                     { name: "Animal Farming", code: "animal" },

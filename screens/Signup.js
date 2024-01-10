@@ -50,14 +50,15 @@ const Signup = ({ navigation }) => {
             // Signed up
             const user = userCredential.user;
 
-            set(ref(database, "users/" + firstName), {
+            set(ref(database, "users/" + username), {
               firstName,
               lastName,
               email,
               username,
               profileImg: "",
               coverImage: "",
-              location: "",
+              city: "",
+              region: "",
               gender: "",
               category: "",
             })
@@ -116,6 +117,8 @@ const Signup = ({ navigation }) => {
         });
       }, 3000);
     }
+
+    navigation.navigate("profile");
   };
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
