@@ -11,6 +11,11 @@ import {
   Image,
 } from "react-native";
 
+import "../firebaseConfig";
+
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getDatabase, ref, set } from "firebase/database";
+
 const Signup = ({ navigation }) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -19,18 +24,98 @@ const Signup = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const [alert, setAlert] = useState({
+    status: false,
+    message: "",
+  });
+
   const inputClass =
     "py-2 px-3 border-b-[1px] mb-6 border-gray-700  text-gray-900";
 
   const handleSignup = () => {
-    // Add your signup logic here
-    console.log("First Name:", firstName);
-    console.log("Last Name:", lastName);
-    console.log("Email:", email);
-    console.log("Username:", username);
-    console.log("Password:", password);
-    console.log("Confirm Password:", confirmPassword);
-    navigation.navigate("profile");
+    const auth = getAuth();
+    const database = getDatabase();
+
+    if (
+      firstName !== "" ||
+      lastName !== "" ||
+      email !== "" ||
+      username !== "" ||
+      password !== "" ||
+      confirmPassword !== ""
+    ) {
+      if (password === confirmPassword) {
+        createUserWithEmailAndPassword(auth, username + "@agro.com", password)
+          .then((userCredential) => {
+            // Signed up
+            const user = userCredential.user;
+
+            set(ref(database, "users/" + firstName), {
+              firstName,
+              lastName,
+              email,
+              username,
+              profileImg: "",
+              coverImage: "",
+              location: "",
+              gender: "",
+              category: "",
+            })
+              .then(() => {
+                navigation.navigate("profile");
+              })
+              .catch((err) => {
+                console.log(err.data);
+              });
+
+            // ...
+          })
+          .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorMessage, errorCode);
+            setAlert({
+              status: true,
+              message: "Something went wrong, Please Try again",
+            });
+
+            setTimeout(() => {
+              setAlert({
+                status: false,
+                message: "",
+              });
+            }, 3000);
+            // ..
+          });
+      } else {
+        setAlert({
+          status: true,
+          message: "password is not the same",
+        });
+
+        setTimeout(() => {
+          setAlert({
+            status: false,
+            message: "",
+          });
+        }, 3000);
+      }
+    }
+
+    // navigation.navigate("profile");
+    else {
+      setAlert({
+        status: true,
+        message: "Please complete your signup",
+      });
+
+      setTimeout(() => {
+        setAlert({
+          status: false,
+          message: "",
+        });
+      }, 3000);
+    }
   };
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
@@ -52,6 +137,13 @@ const Signup = ({ navigation }) => {
             </View>
           </View>
           <View className="w-full">
+            {alert.status && (
+              <View>
+                <Text className="text-center text-base text-red-400 mb-4">
+                  {alert.message}
+                </Text>
+              </View>
+            )}
             <View className="w-full px-4">
               <TextInput
                 className={inputClass}
