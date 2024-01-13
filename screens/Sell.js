@@ -16,6 +16,24 @@ import * as ImagePicker from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library";
 import { ScrollView } from "react-native-gesture-handler";
 
+import "../firebaseConfig";
+import {
+  getDatabase,
+  ref,
+  set,
+  child,
+  push,
+  update,
+  get,
+} from "firebase/database";
+import {
+  getStorage,
+  uploadBytes,
+  ref as sRef,
+  getDownloadURL,
+} from "firebase/storage";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
 const ProductForm = () => {
   const [serviceType, setServiceType] = useState("");
   const [productName, setProductName] = useState("");
@@ -28,6 +46,23 @@ const ProductForm = () => {
   const [selectedImages, setSelectedImages] = useState(null);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const [user, setUser] = useState("");
+
+  useEffect(() => {
+    //getting user
+    const auth = getAuth();
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const userEmail = user.email;
+        setUser(userEmail);
+      } else {
+        // User is signed out
+        console.log("user is logout");
+        // ...
+      }
+    });
+  }, [user]);
 
   // Stores the selected image URI
   const [file, setFile] = useState(null);
@@ -35,8 +70,10 @@ const ProductForm = () => {
   // Stores any error message
   const [error, setError] = useState(null);
 
-  console.log("worrking or not");
-
+  //firebase
+  const database = getDatabase();
+  const dbRef = ref(getDatabase());
+  const storage = getStorage();
   const regionsInGhana = [
     "Greater Accra",
     "Ashanti",
@@ -110,6 +147,34 @@ const ProductForm = () => {
         const limitedImages = file.slice(0, 3);
         console.log(limitedImages.length, "ll");
         setSelectedImages(limitedImages);
+        console.log(selectedImages, "ooo");
+
+        selectedImages &&
+          selectedImages.map((image) => {
+            console.log(selectedImages, image, "mmmm");
+            const fileName = image.split("/");
+            console.log(fileName.slice(-1), "ppp");
+
+            const storageRef = sRef(storage, "Products/" + fileName.slice(-1));
+
+            // 'file' comes from the Blob or File API
+
+            uploadBytes(storageRef, image)
+              .then((snapshot) => {
+                console.log("Uploaded a blob or file!");
+              })
+              .then(() => {
+                // Check if selectedImages is not null before calling getDownloadURL
+                if (image) {
+                  getDownloadURL(storageRef).then((imageUrl) => {
+                    console.log("image url", imageUrl);
+                    setSelectedImages(imageUrl);
+                  });
+                } else {
+                  console.log("No image selected to get URL from");
+                }
+              });
+          });
 
         // Clear any previous errors
         setError(null);
@@ -120,6 +185,48 @@ const ProductForm = () => {
     } catch (error) {
       console.error("Error picking images: ", error);
       setError("Error picking images");
+    }
+  };
+
+  const handleSubmit = () => {
+    console.log(serviceType);
+    console.log(selectedImages);
+    console.log(productName);
+    console.log(region);
+    console.log(town);
+    console.log(price);
+    console.log(description);
+    console.log(name);
+    console.log(phone);
+
+    if (
+      serviceType != "" ||
+      selectedImages != "" ||
+      productName != "" ||
+      region != "" ||
+      town != "" ||
+      price != "" ||
+      name != "" ||
+      phone != ""
+    ) {
+      set(ref(database, "Products/" + productName), {
+        serviceType,
+        productImage: "",
+        productName,
+        region,
+        town,
+        price,
+        description,
+        name,
+        phone,
+        username: user && user.split("@")[0],
+      })
+        .then(() => {
+          console.log("successful");
+        })
+        .catch((err) => {
+          console.log(err.data);
+        });
     }
   };
 
@@ -193,6 +300,22 @@ const ProductForm = () => {
             className="h-14 border-[1px] border-green-700 rounded-lg px-4"
           />
 
+          <TextInput
+            value={price}
+            onChangeText={(text) => setPrice(text)}
+            placeholder="Price"
+            keyboardType="numeric"
+            className="h-14 border-[1px] border-green-700 rounded-lg px-4 mt-4"
+          />
+
+          <TextInput
+            value={description}
+            onChangeText={(text) => setDescription(text)}
+            placeholder="Description"
+            multiline
+            className="h-14 border-[1px] border-green-700 rounded-lg px-4 mt-4"
+          />
+
           <View className="mt-4">
             <DropdownSelect
               placeholder="Select Region"
@@ -219,25 +342,9 @@ const ProductForm = () => {
           />
 
           <TextInput
-            value={price}
-            onChangeText={(text) => setPrice(text)}
-            placeholder="Price"
-            keyboardType="numeric"
-            className="h-14 border-[1px] border-green-700 rounded-lg px-4 mt-4"
-          />
-
-          <TextInput
-            value={description}
-            onChangeText={(text) => setDescription(text)}
-            placeholder="Description"
-            multiline
-            className="h-14 border-[1px] border-green-700 rounded-lg px-4 mt-4"
-          />
-
-          <TextInput
             value={name}
             onChangeText={(text) => setName(text)}
-            placeholder="Name"
+            placeholder="Full Name"
             className="h-14 border-[1px] border-green-700 rounded-lg px-4 mt-4"
           />
 
@@ -250,7 +357,9 @@ const ProductForm = () => {
           />
         </View>
 
-        <Pressable className="h-12 flex-row justify-center items-center bg-green-600  my-4">
+        <Pressable
+          className="h-12 flex-row justify-center items-center bg-green-600  my-4"
+          onPress={handleSubmit}>
           <Text className="text-white font-medium text-lg">Submit</Text>
         </Pressable>
       </ScrollView>

@@ -18,9 +18,18 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import "../firebaseConfig";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, child, push, update, get } from "firebase/database";
+import {
+  getStorage,
+  uploadBytes,
+  ref as sRef,
+  getDownloadURL,
+} from "firebase/storage";
+
 const Profile = ({ navigation }) => {
   const [selectedImages, setSelectedImages] = useState(null);
   const [profileImages, setProfileImages] = useState(null);
+  const [selectedImagesurl, setSelectedImagesurl] = useState(null);
+  const [profileImagesurl, setProfileImagesurl] = useState(null);
   const [error, setError] = useState(null);
 
   const [gender, setGender] = useState("");
@@ -38,6 +47,7 @@ const Profile = ({ navigation }) => {
 
   const db = getDatabase();
   const dbRef = ref(getDatabase());
+  const storage = getStorage();
 
   useEffect(() => {
     //getting user
@@ -101,8 +111,8 @@ const Profile = ({ navigation }) => {
             lastName: data.lastName,
             email: data.email,
             username: data.username,
-            profileImg: "",
-            coverImage: "",
+            profileImg: profileImagesurl,
+            coverImage: selectedImagesurl,
             category: agricultureGroup,
             city: town,
             gender,
@@ -150,34 +160,7 @@ const Profile = ({ navigation }) => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsMultipleSelection: true,
-      });
-
-      if (!result.canceled) {
-        // Update the file state variable with the selected images
-        let file = result.assets.map((asset) => asset.uri);
-        const limitedImages = file.slice(0, 4);
-        console.log(limitedImages.length, "ll");
-        setSelectedImages(limitedImages);
-
-        // Clear any previous errors
-        setError(null);
-      } else {
-        // Handle cancellation or other cases
-        console.log("Image picker cancelled or failed");
-      }
-    } catch (error) {
-      console.error("Error picking images: ", error);
-      setError("Error picking images");
-      console.log(eror);
-    }
-  };
-
-  const pickProfileImages = async () => {
-    try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsMultipleSelection: true,
+        allowsMultipleSelection: false,
       });
 
       if (!result.canceled) {
@@ -185,7 +168,30 @@ const Profile = ({ navigation }) => {
         let file = result.assets.map((asset) => asset.uri);
         const limitedImages = file.slice(0, 1);
         console.log(limitedImages.length, "ll");
-        setProfileImages(limitedImages);
+        setSelectedImages(limitedImages);
+        console.log(selectedImages[0], "ee");
+        const fileName = selectedImages[0].split("/");
+        console.log(fileName.slice(-1), "ppp");
+
+        const storageRef = sRef(storage, "coverImage/" + fileName.slice(-1));
+
+        // 'file' comes from the Blob or File API
+
+        uploadBytes(storageRef, selectedImages[0])
+          .then((snapshot) => {
+            console.log("Uploaded a blob or file!");
+          })
+          .then(() => {
+            // Check if selectedImages is not null before calling getDownloadURL
+            if (selectedImages && selectedImages[0]) {
+              getDownloadURL(storageRef).then((imageUrl) => {
+                console.log("image url", imageUrl);
+                setSelectedImagesurl(imageUrl);
+              });
+            } else {
+              console.log("No image selected to get URL from");
+            }
+          });
 
         // Clear any previous errors
         setError(null);
@@ -196,6 +202,57 @@ const Profile = ({ navigation }) => {
     } catch (error) {
       console.error("Error picking images: ", error);
       setError("Error picking images");
+      console.log(error);
+    }
+  };
+
+  const pickProfileImages = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsMultipleSelection: false,
+      });
+
+      if (!result.canceled) {
+        // Update the file state variable with the selected images
+        let file = result.assets.map((asset) => asset.uri);
+        const limitedImages = file.slice(0, 4);
+        console.log(limitedImages.length, "ll");
+        setProfileImages(limitedImages);
+        console.log(profileImages[0], "ee");
+        const fileName = profileImages[0].split("/");
+        console.log(fileName.slice(-1), "ppp");
+
+        const storageRef = sRef(storage, "profileImage/" + fileName.slice(-1));
+
+        // 'file' comes from the Blob or File API
+
+        uploadBytes(storageRef, profileImages[0])
+          .then((snapshot) => {
+            console.log("Uploaded a blob or file!");
+          })
+          .then(() => {
+            // Check if selectedImages is not null before calling getDownloadURL
+            if (profileImages && profileImages[0]) {
+              getDownloadURL(storageRef).then((imageUrl) => {
+                console.log("image url", imageUrl);
+                setProfileImagesurl(imageUrl);
+              });
+            } else {
+              console.log("No image selected to get URL from");
+            }
+          });
+
+        // Clear any previous errors
+        setError(null);
+      } else {
+        // Handle cancellation or other cases
+        console.log("Image picker cancelled or failed");
+      }
+    } catch (error) {
+      console.error("Error picking images: ", error);
+      setError("Error picking images");
+      console.log(error);
     }
   };
 
@@ -215,49 +272,47 @@ const Profile = ({ navigation }) => {
                 <TouchableOpacity
                   className="flex-row justify-start gap-2 rounded-lg"
                   onPress={pickMultipleImages}>
-                  {selectedImages
-                    ? selectedImages.map((imageUri, index) => (
-                        <View className="w-full ">
+                  {selectedImages != null ? (
+                    selectedImages.map((imageUri, index) => (
+                      <View className="w-full ">
+                        <Image
+                          key={index}
+                          source={{ uri: selectedImages[0] }}
+                          className="h-[150px] w-full bg-red-500 "
+                        />
+                        {console.log(imageUri, "hoooo")}
+                        {console.log(selectedImages[0], "mmmoooo")}
+                      </View>
+                    ))
+                  ) : (
+                    <TouchableOpacity
+                      onPress={pickMultipleImages}
+                      className="absolute w-full">
+                      <View className="w-full h-[150px]   rounded-xl lex-row justify-center items-center">
+                        <View className="w-full">
                           <Image
-                            key={index}
-                            source={{ uri: imageUri }}
-                            className="h-[150px] w-full bg-red-500 "
+                            source={require("../images/defaultcover.jpg")}
+                            className="w-[100%] h-[150px] rounded-xl "
                           />
                         </View>
-                      ))
-                    : ""}
+                        <View className="absolute">
+                          <Text className="text-lg font-semibold">
+                            Upload a Cover Image
+                          </Text>
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                  )}
                 </TouchableOpacity>
-                {!selectedImages ? (
-                  <TouchableOpacity
-                    onPress={pickMultipleImages}
-                    className="absolute w-full">
-                    <View className="w-full h-[150px]   rounded-xl lex-row justify-center items-center">
-                      <View className="w-full">
-                        <Image
-                          source={require("../images/defaultcover.jpg")}
-                          className="w-[100%] h-[150px] rounded-xl "
-                        />
-                      </View>
-                      <View className="absolute">
-                        <Text className="text-lg font-semibold">
-                          Upload a Cover Image
-                        </Text>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-                ) : (
-                  ""
-                )}
               </View>
             </View>
             <View>
               <View className="bg-white w-[100px] h-[100px] rounded-full ml-6 mt-[-35px] border-white border-4 ">
-                {profileImages ? (
+                {profileImages != null ? (
                   profileImages.map((imageUri, index) => (
-                    <View className="w-full ">
+                    <View className="w-full " key={index}>
                       <Image
-                        key={index}
-                        source={{ uri: imageUri }}
+                        source={{ uri: profileImages[0] }}
                         className="w-[90px] h-[90px]  rounded-full "
                       />
                       <TouchableOpacity

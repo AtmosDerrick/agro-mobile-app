@@ -23,6 +23,7 @@ const Signup = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [id, setId] = useState("");
 
   const [alert, setAlert] = useState({
     status: false,

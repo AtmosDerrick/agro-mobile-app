@@ -48,6 +48,7 @@ const Login = ({ navigation }) => {
           const errorMessage = error.message;
         });
     } else {
+      navigation.navigate("Home");
       // setError(true);
       // setTimeout(() => {
       //   setError(false);
