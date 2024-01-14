@@ -46,6 +46,7 @@ const ProductForm = () => {
   const [selectedImages, setSelectedImages] = useState(null);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const [productImageUrl, setProductImageUrl] = useState([]);
   const [user, setUser] = useState("");
 
   useEffect(() => {
@@ -100,9 +101,7 @@ const ProductForm = () => {
   //     setRegion(value);
   //   };
 
-  useEffect(() => {
-    checkMediaLibraryPermission();
-
+  useEffect(async () => {
     // Add listeners for keyboard show and hide events
     const keyboardDidShowListener = Keyboard.addListener(
       "keyboardDidShow",
@@ -125,20 +124,13 @@ const ProductForm = () => {
     };
   }, []);
 
-  const checkMediaLibraryPermission = async () => {
-    const { status } = await MediaLibrary.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") {
-      alert(
-        "Sorry, we need media library permissions to select multiple images."
-      );
-    }
-  };
-
   const pickMultipleImages = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsMultipleSelection: true,
+        aspect: [3, 4],
+        quality: 1,
       });
 
       if (!result.canceled) {
@@ -148,33 +140,7 @@ const ProductForm = () => {
         console.log(limitedImages.length, "ll");
         setSelectedImages(limitedImages);
         console.log(selectedImages, "ooo");
-
-        selectedImages &&
-          selectedImages.map((image) => {
-            console.log(selectedImages, image, "mmmm");
-            const fileName = image.split("/");
-            console.log(fileName.slice(-1), "ppp");
-
-            const storageRef = sRef(storage, "Products/" + fileName.slice(-1));
-
-            // 'file' comes from the Blob or File API
-
-            uploadBytes(storageRef, image)
-              .then((snapshot) => {
-                console.log("Uploaded a blob or file!");
-              })
-              .then(() => {
-                // Check if selectedImages is not null before calling getDownloadURL
-                if (image) {
-                  getDownloadURL(storageRef).then((imageUrl) => {
-                    console.log("image url", imageUrl);
-                    setSelectedImages(imageUrl);
-                  });
-                } else {
-                  console.log("No image selected to get URL from");
-                }
-              });
-          });
+    
 
         // Clear any previous errors
         setError(null);
@@ -209,9 +175,40 @@ const ProductForm = () => {
       name != "" ||
       phone != ""
     ) {
+      selectedImages &&
+        selectedImages.map((image) => {
+          console.log(selectedImages, image, "mmmm");
+          const fileName = image.split("/");
+          console.log(fileName.slice(-1), "ppp");
+
+          const storageRef = sRef(storage, "Products/" + fileName.slice(-1));
+
+          // 'file' comes from the Blob or File API
+
+          uploadBytes(storageRef, image)
+            .then((snapshot) => {
+              console.log("Uploaded a blob or file!");
+            })
+            .then(() => {
+              // Check if selectedImages is not null before calling getDownloadURL
+              if (image) {
+                getDownloadURL(storageRef).then(async (imageUrl) => {
+                  console.log("image url", imageUrl);
+                  setProductImageUrl((prevUrls) => [...prevUrls, imageUrl]);
+                });
+              } else {
+                console.log("No image selected to get URL from");
+              }
+            });
+        });
+    }
+
+    console.log(productImageUrl);
+
+    if (productImageUrl.length != 0) {
       set(ref(database, "Products/" + productName), {
         serviceType,
-        productImage: "",
+        productImage: productImageUrl,
         productName,
         region,
         town,

@@ -1,6 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
+import "../firebaseConfig";
+import { getDatabase, ref, onValue } from "firebase/database";
+import {
+  getStorage,
+  uploadBytes,
+  ref as sRef,
+  getDownloadURL,
+  fetchDownloadURLFromStorage,
+} from "firebase/storage";
+import firebase from "firebase/app";
+
+import { err } from "react-native-svg";
 
 const Store = ({ handleNavigate }) => {
   const img1 = require("../images/img1.jpg");
@@ -11,6 +23,33 @@ const Store = ({ handleNavigate }) => {
   const img6 = require("../images/img6.jpg");
   const img7 = require("../images/img7.jpg");
   const img8 = require("../images/img8.jpg");
+  const [fetchproducts, setFetchProducts] = useState([]);
+  const [ready, setReady] = useState(true);
+  const [error, setError] = useState(null);
+
+  const db = getDatabase();
+
+  useEffect(() => {
+    const starCountRef = ref(db, "Products/");
+    onValue(
+      starCountRef,
+      (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          // Convert the object values into an array
+          const dataArray = Object.values(data);
+          setFetchProducts(dataArray);
+        }
+        setReady(false);
+      },
+      (error) => {
+        console.error("Error fetching data:", error);
+        setError("Error fetching data");
+        setReady(false);
+      }
+    );
+  }, []);
+  fetchproducts && console.log(fetchproducts, "data");
 
   const products = [
     {
@@ -86,10 +125,22 @@ const Store = ({ handleNavigate }) => {
       onPress={handleNavigate}>
       <View>
         <View className="w-[160px] h-[160px]">
-          <Image
-            source={item.image}
-            className="w-[155px] h-[155px] rounded-xl "
-          />
+          {item.productImage && item.productImage.length > 0 ? (
+            // Render the first image in the array
+            <Image
+              source={{ uri: item.productImage[0] }}
+              className="w-[155px] h-[155px] rounded-xl "
+            />
+          ) : (
+            // Render a default image or some placeholder if no images are available
+            // <Image
+            //   source={require("../path/to/default/image.jpg")}
+            //   className="w-[155px] h-[155px] rounded-xl "
+            // />
+            <View>
+              <Text>Hello</Text>
+            </View>
+          )}
         </View>
         <View className="mb-2">
           <Text className="text-green-500 text-sm font-semibold">
@@ -97,7 +148,7 @@ const Store = ({ handleNavigate }) => {
             {item.price}
           </Text>
           <Text className=" font-medium text-base">{item.productName}</Text>
-          <Text className="text-xs mt-[-2px]">{item.location}</Text>
+          <Text className="text-xs mt-[-2px]">{item.region}</Text>
           <Text style={styles.status} className="mb-2">
             {item.serviceType}
           </Text>
@@ -108,13 +159,23 @@ const Store = ({ handleNavigate }) => {
 
   return (
     <View className="pb-12">
-      <FlatList
-        data={products}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
-        numColumns={2} // Set the number of columns to 2 for a two-column grid
-        contentContainerStyle={styles.flatListContainer}
-      />
+      {ready ? (
+        <View>
+          <Text>Loading...</Text>
+        </View>
+      ) : error ? (
+        <View>
+          <Text>{error}</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={fetchproducts}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.name}
+          numColumns={2} // Set the number of columns to 2 for a two-column grid
+          contentContainerStyle={styles.flatListContainer}
+        />
+      )}
     </View>
   );
 };
