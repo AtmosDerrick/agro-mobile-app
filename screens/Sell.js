@@ -16,7 +16,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library";
 import { ScrollView } from "react-native-gesture-handler";
 
-import "../firebaseConfig";
+import { storage } from "../firebase.config";
 import {
   getDatabase,
   ref,
@@ -101,7 +101,7 @@ const ProductForm = () => {
   //     setRegion(value);
   //   };
 
-  useEffect(async () => {
+  useEffect(() => {
     // Add listeners for keyboard show and hide events
     const keyboardDidShowListener = Keyboard.addListener(
       "keyboardDidShow",
@@ -124,6 +124,35 @@ const ProductForm = () => {
     };
   }, []);
 
+  async function uploadImageAsync(uri, productname) {
+    // Why are we using XMLHttpRequest? See:
+    // https://github.com/expo/expo/issues/2402#issuecomment-443726662
+    const blob = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        resolve(xhr.response);
+      };
+      xhr.onerror = function (e) {
+        console.log(e);
+        reject(new TypeError("Network request failed"));
+      };
+      xhr.responseType = "blob";
+      xhr.open("GET", uri, true);
+      xhr.send(null);
+    });
+
+    try {
+      const storageRef = sRef(storage, "Products/" + Date.now());
+      const result = await uploadBytes(storageRef, blob);
+
+      blob.close();
+
+      return getDownloadURL(storageRef);
+    } catch (error) {
+      alert(`Error: ${error}`);
+    }
+  }
+
   const pickMultipleImages = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -137,10 +166,9 @@ const ProductForm = () => {
         // Update the file state variable with the selected images
         let file = result.assets.map((asset) => asset.uri);
         const limitedImages = file.slice(0, 3);
-        console.log(limitedImages.length, "ll");
+
         setSelectedImages(limitedImages);
         console.log(selectedImages, "ooo");
-    
 
         // Clear any previous errors
         setError(null);
@@ -154,7 +182,7 @@ const ProductForm = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log(serviceType);
     console.log(selectedImages);
     console.log(productName);
@@ -175,35 +203,18 @@ const ProductForm = () => {
       name != "" ||
       phone != ""
     ) {
-      selectedImages &&
-        selectedImages.map((image) => {
-          console.log(selectedImages, image, "mmmm");
-          const fileName = image.split("/");
-          console.log(fileName.slice(-1), "ppp");
+      productImageUrl &&
+        (await Promise.all(
+          selectedImages.map(async (image) => {
+            console.log(image, "llloooo");
+            const uploadURL = await uploadImageAsync(image);
+            setProductImageUrl((prevUrls) => [...prevUrls, uploadURL]);
+            console.log(productImageUrl, "ooop");
 
-          const storageRef = sRef(storage, "Products/" + fileName.slice(-1));
-
-          // 'file' comes from the Blob or File API
-
-          uploadBytes(storageRef, image)
-            .then((snapshot) => {
-              console.log("Uploaded a blob or file!");
-            })
-            .then(() => {
-              // Check if selectedImages is not null before calling getDownloadURL
-              if (image) {
-                getDownloadURL(storageRef).then(async (imageUrl) => {
-                  console.log("image url", imageUrl);
-                  setProductImageUrl((prevUrls) => [...prevUrls, imageUrl]);
-                });
-              } else {
-                console.log("No image selected to get URL from");
-              }
-            });
-        });
+            // Process uploaded image URL as needed
+          })
+        ));
     }
-
-    console.log(productImageUrl);
 
     if (productImageUrl.length != 0) {
       set(ref(database, "Products/" + productName), {
@@ -219,6 +230,11 @@ const ProductForm = () => {
         username: user && user.split("@")[0],
       })
         .then(() => {
+          setProductName("");
+          setPrice("");
+          setDescription("");
+          setTown("");
+
           console.log("successful");
         })
         .catch((err) => {
@@ -260,7 +276,7 @@ const ProductForm = () => {
         </View>
 
         <Text className="text-base font-semibold text-gray-600 my-2">
-          Image
+          Product Images
         </Text>
         <View
           className={
@@ -285,7 +301,7 @@ const ProductForm = () => {
             </View>
           </TouchableOpacity>
         </View>
-        <Text className="text-xs text-gray-400">
+        <Text className="text-xs text-gray-400 pt-2">
           First Picture is the title picture
         </Text>
 

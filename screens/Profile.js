@@ -15,15 +15,16 @@ import * as ImagePicker from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
-import "../firebaseConfig";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, child, push, update, get } from "firebase/database";
 import {
-  getStorage,
   uploadBytes,
   ref as sRef,
   getDownloadURL,
+  deleteObject,
 } from "firebase/storage";
+
+import { storage } from "../firebase.config";
 
 const Profile = ({ navigation }) => {
   const [selectedImages, setSelectedImages] = useState(null);
@@ -38,6 +39,8 @@ const Profile = ({ navigation }) => {
   const [agricultureGroup, setAgricultureGroup] = useState("");
   const [user, setUser] = useState("");
 
+  const [loafing, setIsLoafing] = useState(false);
+
   const [userdata, setUserData] = useState({
     email: "",
     firstName: "",
@@ -47,7 +50,6 @@ const Profile = ({ navigation }) => {
 
   const db = getDatabase();
   const dbRef = ref(getDatabase());
-  const storage = getStorage();
 
   useEffect(() => {
     //getting user
@@ -112,7 +114,8 @@ const Profile = ({ navigation }) => {
             email: data.email,
             username: data.username,
             profileImg: profileImagesurl,
-            coverImage: selectedImagesurl,
+            coverImage: selectedImages,
+            profileImage: profileImages,
             category: agricultureGroup,
             city: town,
             gender,
@@ -123,6 +126,7 @@ const Profile = ({ navigation }) => {
           update(ref(db), updates)
             .then(() => {
               console.log("Data edit successfully");
+              navigation.navigate("Home");
             })
             .catch((error) => {
               console.error("Error deleting data:", error);
@@ -142,117 +146,111 @@ const Profile = ({ navigation }) => {
         console.error(error);
       });
   };
+  
 
-  useEffect(() => {
-    checkMediaLibraryPermission();
-  }, []);
+  const pickImage = async () => {
+    setIsLoafing(true);
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
 
-  const checkMediaLibraryPermission = async () => {
-    const { status } = await MediaLibrary.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") {
-      alert(
-        "Sorry, we need media library permissions to select multiple images."
-      );
+    if (!result.canceled) {
+      setSelectedImages(result.assets[0].uri);
+      const uploadURL = await uploadImageAsync(result.assets[0].uri);
+      setSelectedImages(uploadURL);
+      setInterval(() => {
+        setIsLoafing(false);
+      }, 2000);
+    } else {
+      setInterval(() => {
+        setImage(null);
+        setIsLoafing(false);
+      }, 2000);
     }
-  };
 
-  const pickMultipleImages = async () => {
-    try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsMultipleSelection: false,
+    async function uploadImageAsync(uri) {
+      // Why are we using XMLHttpRequest? See:
+      // https://github.com/expo/expo/issues/2402#issuecomment-443726662
+      const blob = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = function () {
+          resolve(xhr.response);
+        };
+        xhr.onerror = function (e) {
+          console.log(e);
+          reject(new TypeError("Network request failed"));
+        };
+        xhr.responseType = "blob";
+        xhr.open("GET", uri, true);
+        xhr.send(null);
       });
 
-      if (!result.canceled) {
-        // Update the file state variable with the selected images
-        let file = result.assets.map((asset) => asset.uri);
-        const limitedImages = file.slice(0, 1);
-        console.log(limitedImages.length, "ll");
-        setSelectedImages(limitedImages);
-        console.log(selectedImages[0], "ee");
-        const fileName = selectedImages[0].split("/");
-        console.log(fileName.slice(-1), "ppp");
+      try {
+        const storageRef = sRef(storage, "Cover Images/img" + Date.now());
+        const result = await uploadBytes(storageRef, blob);
 
-        const storageRef = sRef(storage, "coverImage/" + fileName.slice(-1));
-
-        // 'file' comes from the Blob or File API
-
-        uploadBytes(storageRef, selectedImages[0])
-          .then((snapshot) => {
-            console.log("Uploaded a blob or file!");
-          })
-          .then(() => {
-            // Check if selectedImages is not null before calling getDownloadURL
-            if (selectedImages && selectedImages[0]) {
-              getDownloadURL(storageRef).then((imageUrl) => {
-                console.log("image url", imageUrl);
-                setSelectedImagesurl(imageUrl);
-              });
-            } else {
-              console.log("No image selected to get URL from");
-            }
-          });
-
-        // Clear any previous errors
-        setError(null);
-      } else {
-        // Handle cancellation or other cases
-        console.log("Image picker cancelled or failed");
+        blob.close();
+        return getDownloadURL(storageRef);
+      } catch (error) {
+        alert(`Error: ${error}`);
       }
-    } catch (error) {
-      console.error("Error picking images: ", error);
-      setError("Error picking images");
-      console.log(error);
     }
   };
 
   const pickProfileImages = async () => {
-    try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsMultipleSelection: false,
+    setIsLoafing(true);
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setProfileImages(result.assets[0].uri);
+      const uploadURL = await uploadImageAsync(result.assets[0].uri);
+      setProfileImages(uploadURL);
+      setInterval(() => {
+        setIsLoafing(false);
+      }, 2000);
+    } else {
+      setInterval(() => {
+        setProfileImages(null);
+        setIsLoafing(false);
+      }, 2000);
+    }
+
+    async function uploadImageAsync(uri) {
+      // Why are we using XMLHttpRequest? See:
+      // https://github.com/expo/expo/issues/2402#issuecomment-443726662
+      const blob = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = function () {
+          resolve(xhr.response);
+        };
+        xhr.onerror = function (e) {
+          console.log(e);
+          reject(new TypeError("Network request failed"));
+        };
+        xhr.responseType = "blob";
+        xhr.open("GET", uri, true);
+        xhr.send(null);
       });
 
-      if (!result.canceled) {
-        // Update the file state variable with the selected images
-        let file = result.assets.map((asset) => asset.uri);
-        const limitedImages = file.slice(0, 4);
-        console.log(limitedImages.length, "ll");
-        setProfileImages(limitedImages);
-        console.log(profileImages[0], "ee");
-        const fileName = profileImages[0].split("/");
-        console.log(fileName.slice(-1), "ppp");
+      try {
+        const storageRef = sRef(storage, "Profile Image/img" + Date.now());
+        const result = await uploadBytes(storageRef, blob);
 
-        const storageRef = sRef(storage, "profileImage/" + fileName.slice(-1));
-
-        // 'file' comes from the Blob or File API
-
-        uploadBytes(storageRef, profileImages[0])
-          .then((snapshot) => {
-            console.log("Uploaded a blob or file!");
-          })
-          .then(() => {
-            // Check if selectedImages is not null before calling getDownloadURL
-            if (profileImages && profileImages[0]) {
-              getDownloadURL(storageRef).then((imageUrl) => {
-                console.log("image url", imageUrl);
-                setProfileImagesurl(imageUrl);
-              });
-            } else {
-              console.log("No image selected to get URL from");
-            }
-          });
-
-        // Clear any previous errors
-        setError(null);
-      } else {
-        // Handle cancellation or other cases
-        console.log("Image picker cancelled or failed");
+        blob.close();
+        return getDownloadURL(storageRef);
+      } catch (error) {
+        alert(`Error: ${error}`);
       }
-    } catch (error) {
-      console.error("Error picking images: ", error);
-      setError("Error picking images");
-      console.log(error);
     }
   };
 
@@ -271,22 +269,19 @@ const Profile = ({ navigation }) => {
                 }>
                 <TouchableOpacity
                   className="flex-row justify-start gap-2 rounded-lg"
-                  onPress={pickMultipleImages}>
-                  {selectedImages != null ? (
-                    selectedImages.map((imageUri, index) => (
-                      <View className="w-full ">
-                        <Image
-                          key={index}
-                          source={{ uri: selectedImages[0] }}
-                          className="h-[150px] w-full bg-red-500 "
-                        />
-                        {console.log(imageUri, "hoooo")}
-                        {console.log(selectedImages[0], "mmmoooo")}
-                      </View>
-                    ))
+                  onPress={pickImage}>
+                  {selectedImages ? (
+                    <View className="w-full ">
+                      <Image
+                        source={{ uri: selectedImages }}
+                        className="h-[150px] w-full  "
+                      />
+                      {console.log(selectedImages, "hoooo")}
+                      {console.log(selectedImages[0], "mmmoooo")}
+                    </View>
                   ) : (
                     <TouchableOpacity
-                      onPress={pickMultipleImages}
+                      onPress={pickImage}
                       className="absolute w-full">
                       <View className="w-full h-[150px]   rounded-xl lex-row justify-center items-center">
                         <View className="w-full">
@@ -309,19 +304,17 @@ const Profile = ({ navigation }) => {
             <View>
               <View className="bg-white w-[100px] h-[100px] rounded-full ml-6 mt-[-35px] border-white border-4 ">
                 {profileImages != null ? (
-                  profileImages.map((imageUri, index) => (
-                    <View className="w-full " key={index}>
-                      <Image
-                        source={{ uri: profileImages[0] }}
-                        className="w-[90px] h-[90px]  rounded-full "
-                      />
-                      <TouchableOpacity
-                        className="w-8 h-8 bg-green-600 flex-row justify-center items-center rounded-full absolute bottom-1 right-1 mr-[-12]"
-                        onPress={pickProfileImages}>
-                        <MaterialIcons name="add" size={24} color={"white"} />
-                      </TouchableOpacity>
-                    </View>
-                  ))
+                  <View className="w-full ">
+                    <Image
+                      source={{ uri: profileImages }}
+                      className="w-[90px] h-[90px]  rounded-full "
+                    />
+                    <TouchableOpacity
+                      className="w-8 h-8 bg-green-600 flex-row justify-center items-center rounded-full absolute bottom-1 right-1 mr-[-12]"
+                      onPress={pickProfileImages}>
+                      <MaterialIcons name="add" size={24} color={"white"} />
+                    </TouchableOpacity>
+                  </View>
                 ) : (
                   <View>
                     <Image

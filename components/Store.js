@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
-import "../firebaseConfig";
 import { getDatabase, ref, onValue } from "firebase/database";
 import {
   getStorage,

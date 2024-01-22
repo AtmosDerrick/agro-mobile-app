@@ -11,8 +11,6 @@ import {
   Image,
 } from "react-native";
 
-import "../firebaseConfig";
-
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { getDatabase, ref, set } from "firebase/database";
 

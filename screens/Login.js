@@ -14,10 +14,7 @@ import {
   ScrollView,
   Pressable,
 } from "react-native";
-import { err } from "react-native-svg";
-import axios from "axios";
 
-import "../firebaseConfig";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 const Login = ({ navigation }) => {
   const [username, setUsername] = useState("");
@@ -46,6 +43,7 @@ const Login = ({ navigation }) => {
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
+          console.log(errorMessage);
         });
     } else {
       navigation.navigate("Home");
