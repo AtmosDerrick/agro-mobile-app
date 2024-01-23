@@ -237,7 +237,7 @@ const ProductForm = () => {
     }
 
     if (productImageUrl && productImageUrl.length != 0) {
-      set(ref(database, "Products/" + productName), {
+      set(ref(database, "Products/" + uid), {
         serviceType,
         productImage: productImageUrl && productImageUrl,
         productName,

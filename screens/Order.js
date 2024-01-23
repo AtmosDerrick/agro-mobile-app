@@ -1,181 +1,158 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
-  Image,
   Text,
-  TouchableOpacity,
-  Pressable,
+  Image,
+  ScrollView,
+  FlatList,
 } from "react-native";
-import { FlatList } from "react-native-gesture-handler";
+import { TouchableOpacity } from "react-native-gesture-handler";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
+import { useRoute } from "@react-navigation/native";
+import { getDatabase, ref, child, get } from "firebase/database";
 
 const Order = ({ navigation }) => {
-  const img1 = require("../images/img1.jpg");
-  const img2 = require("../images/img7.jpg");
-  const img3 = require("../images/img3.jpg");
-  const img4 = require("../images/img4.jpg");
-  const img5 = require("../images/img5.jpg");
-  const img6 = require("../images/img6.jpg");
-  const img7 = require("../images/img2.jpg");
-  const img8 = require("../images/img8.jpg");
+  const img1 = require("../images/img2.jpg");
+  const [product, setProduct] = useState();
 
-  const products = [
+  const route = useRoute();
+
+  const id = route.params?.id;
+
+  useEffect(() => {
+    const dbRef = ref(getDatabase());
+    get(child(dbRef, `Products/${id}`))
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          console.log(snapshot.val(), "setting producte node");
+          setProduct(snapshot.val());
+        } else {
+          console.log("No data available");
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
+
+  useEffect(() => {
+    navigation.getParent()?.setOptions({
+      headerShown: false,
+    });
+    return () =>
+      navigation.getParent()?.setOptions({
+        headerShown: true,
+      });
+  }, [navigation]);
+
+  const customers = [
     {
       id: 1,
-      productName: "Irrigation Machine",
-      price: 121,
-      image: img1,
-      location: "Kasoa, Eastern Region",
-      serviceType: "Hiring",
-      quantity: 5,
       name: "John Doe",
-      telephoneNumber: 1234567890,
+      location: "City A",
+      phoneNumber: "123-456-7890",
     },
     {
       id: 2,
-      productName: "Fertilizer",
-      price: 50,
-      image: img2,
-      location: "Accra, Greater Accra Region",
-      serviceType: "Selling",
-      quantity: 100,
-      name: "Jane Doe",
-      telephoneNumber: 9876543210,
+      name: "Jane Smith",
+      location: "City B",
+      phoneNumber: "987-654-3210",
     },
     {
       id: 3,
-      productName: "Tractor",
-      price: 300,
-      image: img3,
-      location: "Sunyani, Brong-Ahafo Region",
-      serviceType: "Hiring",
-      quantity: 14,
-      name: "Sam Smith",
-      telephoneNumber: 5555555555,
+      name: "Bob Johnson",
+      location: "City C",
+      phoneNumber: "555-123-4567",
     },
-    {
-      id: 4,
-      productName: "Seeds Pack",
-      price: 25,
-      image: img4,
-      location: "Tamale, Northern Region",
-      serviceType: "Selling",
-      quantity: 10,
-      name: "Eva Johnson",
-      telephoneNumber: 9998887777,
-    },
-    {
-      id: 5,
-      productName: "Plow",
-      price: 80,
-      image: img5,
-      location: "Takoradi, Western Region",
-      serviceType: "Hiring",
-      quantity: 7,
-      name: "Mike Brown",
-      telephoneNumber: 3333333333,
-    },
-    {
-      id: 6,
-      productName: "Gardening Tools Set",
-      price: 40,
-      image: img6,
-      location: "Ho, Volta Region",
-      serviceType: "Selling",
-      quantity: 6,
-      name: "Emily White",
-      telephoneNumber: 1111222233,
-    },
+    // Add more customer objects as needed
   ];
 
   const renderItem = ({ item }) => (
-    <View className="flex-row justify-start mx-3 mb-4 bg-gray-200 rounded-md ">
-      <View>
-        <View className="w-[100px] h-[100px] mr-4">
-          <Image
-            source={item.image}
-            className="w-[100px] h-[100px] rounded-md "
-          />
-          <Text className=" font-medium text-xs absolute mt-1 ml-1">
-            {item.productName}
-          </Text>
+    <View>
+      {product && (
+        <View className="my-2 border-b-[1px] pb-1 border-b-gray-400 flex-row justify-between items-center">
+          <View>
+            <Text className="text-base font-medium text-green-500">
+              {item.name}
+            </Text>
+            <Text className="text-sm">{` ${item.location}`}</Text>
+            <Text className="text-xs">{` ${item.phoneNumber}`}</Text>
+          </View>
+          <TouchableOpacity className="w-8 h-8 flex-row justify-center items-center bg-green-600 rounded-full shadow-md">
+            <FontAwesomeIcon name="phone" size={20} color={"white"} />
+          </TouchableOpacity>
         </View>
-      </View>
-      <View className="">
-        <Text className=" font-medium text-sm">{item.name}</Text>
-        <Text className=" font-medium text-xs text-gray-500">
-          {item.location}
-        </Text>
-        <Pressable>
-          <Text className=" font-medium text-sm text-gray-900">
-            {item.telephoneNumber}
-          </Text>
-        </Pressable>
-
-        <Text style={styles.status} className="text-xs">
-          {item.serviceType == "Hiring"
-            ? item.quantity + " Days"
-            : item.quantity + " Pieces"}
-        </Text>
-        <Text className=" font-medium text-xs">
-          {"Ghc " + item.price * item.quantity}
-        </Text>
-      </View>
+      )}
     </View>
   );
-
   return (
-    <FlatList
-      data={products}
-      renderItem={renderItem}
-      keyExtractor={(item) => item.id.toString()}
-      numColumns={1} // Set the number of columns to 2 for a two-column grid
-      contentContainerStyle={styles.flatListContainer}
-    />
+    <View>
+      <ScrollView className="mb-4">
+        <View>
+          {product ? (
+            <View>
+              {console.log(product, "ppp")}
+              <View className="py-2 ">
+                <Image
+                  source={{ uri: product.productImage[0] }}
+                  className="w-full h-[300px] "
+                />
+              </View>
+              <View className="px-4 mt-4 flex-row justify-between">
+                <View>
+                  <Text className="text-lg font-medium text-gray-700">
+                    {product.productName}
+                  </Text>
+                  <Text className="text-base font-medium text-gray-600">
+                    {`Gh\u20B5 `}
+                    {product.price}
+                  </Text>
+                </View>
+                <View className=" flex-row justify-center items-center gap-4">
+                  <FontAwesomeIcon
+                    name="shopping-cart"
+                    size={24}
+                    color={"green"}
+                  />
+                  <Text className="text-lg font-medium">3</Text>
+                </View>
+              </View>
+              <View className="mt-6  px-4">
+                <View className="flex-row justify-between">
+                  <Text className="text-base text-gray-600 font-medium">
+                    Customers
+                  </Text>
+                  <TouchableOpacity>
+                    <Text className="text-gray-500 font-medium">Clear</Text>
+                  </TouchableOpacity>
+                </View>
+                <FlatList
+                  data={customers}
+                  renderItem={renderItem}
+                  keyExtractor={(item) => item.id.toString()}
+                />
+              </View>
+              <View className="w-full flex-row justify-between px-4 mt-8">
+                <TouchableOpacity className=" bg-green-600 px-4 rounded-xl py-3 shadow-md">
+                  <Text className="text-white font-medium">Edit Product</Text>
+                </TouchableOpacity>
+                <TouchableOpacity className=" border-green-600 border-2 px-4 rounded-xl py-3 shadow-md">
+                  <Text className="text-green-600 font-medium">
+                    Delete Product
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ) : (
+            ""
+          )}
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
-  flatListContainer: {
-    paddingHorizontal: 6, // Add horizontal padding for a nice spread
-  },
-  itemContainer: {
-    width: "100%",
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between", // Add space between items
-    marginBottom: 8,
-  },
-  imageContainer: {
-    marginRight: 0,
-  },
-  image: {
-    width: 180,
-    height: 100,
-    borderRadius: 8,
-    borderWidth: 2,
-    borderColor: "green",
-  },
-
-  price: {
-    color: "#00cc00",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  title: {
-    fontSize: 14,
-    fontWeight: "medium",
-    color: "#333",
-  },
-  location: {
-    fontSize: 10,
-    color: "#666",
-  },
-  status: {
-    fontSize: 12,
-    color: "#ff0000",
-  },
-});
+const styles = StyleSheet.create({});
 
 export default Order;

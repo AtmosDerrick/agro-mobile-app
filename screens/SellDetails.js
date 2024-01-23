@@ -20,10 +20,16 @@ import SellerStore from "../components/SellerStore";
 import ProductForm from "./Sell";
 import Order from "./Order";
 
-const SellDetails = () => {
+const SellDetails = ({ navigation }) => {
   const [searchActive, SetSearchActive] = useState(false);
   const [menuClick, setMenuClick] = useState("products");
   const [activeMenu, setActiveMenu] = useState("products");
+  const [index, setIndex] = useState("");
+
+  const handleOrder = (id) => {
+    navigation.navigate("orders", { id });
+    console.log(id, "iiid");
+  };
 
   const dismissKeyboard = () => {
     Keyboard.dismiss();
@@ -67,8 +73,8 @@ const SellDetails = () => {
         <TouchableOpacity
           className={
             menuClick == "products"
-              ? " shadow-md border-b-2 border-b-green-600 px-6"
-              : "text-green-500 flex-row justify-center items-center mt-2 mr-4  px-2 "
+              ? " shadow-md  bg-green-700 py-2 rounded-md px-6"
+              : "shadow-md  bg-green-700 py-2 rounded-md px-6 "
           }
           onPress={() => {
             setMenuClick("products");
@@ -78,47 +84,17 @@ const SellDetails = () => {
               +
             </Text>
           ) : (
-            <View className="flex-row justify-between items-center gap-2">
-              <FontAwesomeIcon
-                name="gift"
-                size={searchActive ? 20 : 24}
-                color={"green"}
-              />
-              <Text>Product</Text>
-            </View>
-          )}
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          className={
-            menuClick === "orders"
-              ? "   shadow-md border-b-2 border-b-green-600 px-6"
-              : "text-green-500   flex-row justify-center items-center mt-2  rounded-md px-6 "
-          }
-          onPress={() => {
-            setMenuClick("orders");
-          }}>
-          {searchActive ? (
-            ""
-          ) : (
-            <View className="flex-row justify-between items-center gap-2">
-              <FontAwesomeIcon
-                name="money"
-                size={searchActive ? 20 : 24}
-                color={"green"}
-              />
-              <Text>Orders</Text>
+            <View className="flex-row justify-between items-center gap-2 ">
+              <Text className="text-white font-medium">Products</Text>
             </View>
           )}
         </TouchableOpacity>
       </View>
 
       {menuClick === "products" ? (
-        <SellerStore />
-      ) : menuClick == "add" ? (
-        <ProductForm />
+        <SellerStore handleOrder={handleOrder} />
       ) : (
-        <Order />
+        <ProductForm />
       )}
 
       <TouchableOpacity

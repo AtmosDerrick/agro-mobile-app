@@ -1,9 +1,15 @@
-import React from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
+import { getDatabase, ref, onValue } from "firebase/database";
+import { UserContext } from "../ContextApi/Context";
 
-const SellerStore = ({ navigation }) => {
+const SellerStore = ({ navigation, handleOrder }) => {
+  const { user, setUserInfo, userInfo } = useContext(UserContext);
+
+  const [product, setProduct] = useState();
+
   const img1 = require("../images/img1.jpg");
   const img2 = require("../images/img2.jpg");
   const img3 = require("../images/img3.jpg");
@@ -12,6 +18,31 @@ const SellerStore = ({ navigation }) => {
   const img6 = require("../images/img6.jpg");
   const img7 = require("../images/img7.jpg");
   const img8 = require("../images/img8.jpg");
+
+  const db = getDatabase();
+
+  useEffect(() => {
+    const starCountRef = ref(db, "Products/");
+    onValue(
+      starCountRef,
+      (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          // Convert the object values into an array
+          const dataArray = Object.values(data);
+          const filteredData = dataArray.filter((item) => {
+            return item.username === userInfo.username;
+          });
+          setProduct(filteredData);
+        }
+      },
+      (error) => {
+        console.error("Error fetching data:", error);
+        setError("Error fetching data");
+        setReady(false);
+      }
+    );
+  }, [userInfo.username]); // Include userInfo.username in the dependency array
 
   const products = [
     {
@@ -63,36 +94,29 @@ const SellerStore = ({ navigation }) => {
       location: "Ho, Volta Region",
       serviceType: "Selling",
     },
-    {
-      id: 7,
-      productName: "Sprinkler System",
-      price: "150",
-      image: img7,
-      location: "Wa, Upper West Region",
-      serviceType: "Hiring",
-    },
-    {
-      id: 8,
-      productName: "Pesticides",
-      price: "30",
-      image: img8,
-      location: "Koforidua, Eastern Region",
-      serviceType: "Selling",
-    },
   ];
 
   const renderItem = ({ item }) => (
-    <View className="flex-row justify-start mx-3 mb-2 bg-gray-200 rounded-md ">
+    <TouchableOpacity
+      className="flex-row justify-start mx-3 mb-2 bg-gray-200 rounded-md shadow-sm "
+      onPress={() => {
+        if (item.id) {
+          handleOrder(item.id);
+        } else {
+          item.id = 0;
+          handleOrder(0);
+        }
+      }}>
       <View>
         <View className="w-[100px] h-[100px] mr-4">
           <Image
-            source={item.image}
+            source={item.productImage}
             className="w-[100px] h-[100px] rounded-md "
           />
         </View>
       </View>
       <View className="">
-        <Text className="text-sm">
+        <Text className="text-sm pt-4">
           <Text>{`Gh\u20B5`}</Text>
           {item.price}
         </Text>
@@ -100,21 +124,13 @@ const SellerStore = ({ navigation }) => {
         <Text style={styles.status} className="">
           {item.serviceType}
         </Text>
-        <View className="flex-row gap-4 mt-1 pb-1 w-full">
-          <TouchableOpacity>
-            <FontAwesomeIcon name="edit" size={20} color="green" />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <FontAwesomeIcon name="trash" size={20} color="red" />
-          </TouchableOpacity>
-        </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
     <FlatList
-      data={products}
+      data={product}
       renderItem={renderItem}
       keyExtractor={(item) => item.id.toString()}
       numColumns={1} // Set the number of columns to 2 for a two-column grid

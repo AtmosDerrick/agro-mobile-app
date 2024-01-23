@@ -13,6 +13,7 @@ import ExpertChats from "./ExpertChats";
 import BuyRoute from "../Routes/BuyRoute";
 import SocialMediaRoute from "../Routes/SocialMediaRoute";
 import ExpertRoute from "../Routes/ExpertRoute";
+import SellerRoute from "../Routes/SellRoute";
 
 const CustomTitleComponent = () => {
   return (
@@ -85,7 +86,7 @@ const Home = ({ navigate }) => {
       />
       <Tab.Screen
         name="sell"
-        component={SellDetails}
+        component={SellerRoute}
         options={{
           title: "Grow Your Agro Products",
           headerTitleAlign: "left",

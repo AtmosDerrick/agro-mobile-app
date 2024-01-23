@@ -23,9 +23,9 @@ const Buys = ({ navigation }) => {
     Keyboard.dismiss();
   };
 
-  const handleNavigate = (pname) => {
-    navigation.navigate("oneproduct", { name: pname });
-    console.log("hello me");
+  const handleNavigate = (id) => {
+    navigation.navigate("oneproduct", { id });
+    console.log(id);
   };
   return (
     <TouchableWithoutFeedback

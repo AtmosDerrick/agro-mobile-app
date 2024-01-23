@@ -2,16 +2,6 @@ import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { getDatabase, ref, onValue } from "firebase/database";
-import {
-  getStorage,
-  uploadBytes,
-  ref as sRef,
-  getDownloadURL,
-  fetchDownloadURLFromStorage,
-} from "firebase/storage";
-import firebase from "firebase/app";
-
-import { err } from "react-native-svg";
 
 const Store = ({ handleNavigate, setIndex }) => {
   const img1 = require("../images/img1.jpg");
@@ -53,7 +43,7 @@ const Store = ({ handleNavigate, setIndex }) => {
     <TouchableOpacity
       className="flex-row justify-between mx-3"
       onPress={() => {
-        handleNavigate(item.productName);
+        handleNavigate(item.id);
       }}>
       <View>
         <View className="w-[160px] h-[160px]">

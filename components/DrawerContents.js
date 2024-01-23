@@ -45,7 +45,7 @@ const DrawerContents = ({ navigation }) => {
             </Text>
           </Pressable>
         </View>
-        <View style={{ marginLeft: 8, marginTop: 24 }}>
+        <View style={{ marginLeft: 8, marginTop: 32 }}>
           <Pressable
             style={{
               flexDirection: "row",
@@ -59,6 +59,23 @@ const DrawerContents = ({ navigation }) => {
             </View>
             <Text style={{ fontSize: 18 }} className="font-semibold">
               BookMarks
+            </Text>
+          </Pressable>
+        </View>
+        <View style={{ marginLeft: 8, marginTop: 32 }}>
+          <Pressable
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "start",
+              alignItems: "center",
+              gap: "12",
+            }}>
+            <View>
+              <FontAwesomeIcon name="buysellads" size={24} color="green" />
+            </View>
+            <Text style={{ fontSize: 18 }} className="font-semibold">
+              Ads
             </Text>
           </Pressable>
         </View>
