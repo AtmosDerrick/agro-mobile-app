@@ -24,4 +24,4 @@ export const FireBase_Auth = getAuth(app);
 const database = getDatabase(app);
 const storage = getStorage(app);
 
-export { app, storage };
+export { app, storage, database };

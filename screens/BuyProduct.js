@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { View, StyleSheet, Image, Text, Pressable } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { database } from "../firebase.config";
 
 const BuyProduct = ({ navigation }) => {
   const img2 = require("../images/img2.jpg");

@@ -33,7 +33,7 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-
+import uuid from "react-native-uuid";
 const ProductForm = () => {
   const [serviceType, setServiceType] = useState("");
   const [productName, setProductName] = useState("");
@@ -43,7 +43,7 @@ const ProductForm = () => {
   const [description, setDescription] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [selectedImages, setSelectedImages] = useState(null);
+  const [selectedImages, setSelectedImages] = useState([]);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const [productImageUrl, setProductImageUrl] = useState([]);
@@ -65,11 +65,10 @@ const ProductForm = () => {
     });
   }, [user]);
 
-  // Stores the selected image URI
-  const [file, setFile] = useState(null);
-
   // Stores any error message
   const [error, setError] = useState(null);
+
+  const uid = uuid.v4();
 
   //firebase
   const database = getDatabase();
@@ -167,11 +166,11 @@ const ProductForm = () => {
         let file = result.assets.map((asset) => asset.uri);
         const limitedImages = file.slice(0, 3);
 
-        setSelectedImages(limitedImages);
-        console.log(selectedImages, "ooo");
-
         // Clear any previous errors
         setError(null);
+
+        // Call a function to handle the upload and set selectedImages after upload
+        handleImageUpload(limitedImages);
       } else {
         // Handle cancellation or other cases
         console.log("Image picker cancelled or failed");
@@ -179,6 +178,27 @@ const ProductForm = () => {
     } catch (error) {
       console.error("Error picking images: ", error);
       setError("Error picking images");
+    }
+  };
+
+  const handleImageUpload = async (images) => {
+    try {
+      const uploadedImageUrls = await Promise.all(
+        images.map(async (image) => {
+          console.log(image, "llloooo");
+          const uploadURL = await uploadImageAsync(image);
+          console.log(uploadURL, "ooop");
+
+          // Process uploaded image URL as needed
+          return uploadURL;
+        })
+      );
+
+      // Set selectedImages after all images are uploaded
+      setSelectedImages(uploadedImageUrls);
+    } catch (error) {
+      console.error("Error uploading images: ", error);
+      setError("Error uploading images");
     }
   };
 
@@ -203,7 +223,7 @@ const ProductForm = () => {
       name != "" ||
       phone != ""
     ) {
-      productImageUrl &&
+      selectedImages &&
         (await Promise.all(
           selectedImages.map(async (image) => {
             console.log(image, "llloooo");
@@ -216,10 +236,10 @@ const ProductForm = () => {
         ));
     }
 
-    if (productImageUrl.length != 0) {
+    if (productImageUrl && productImageUrl.length != 0) {
       set(ref(database, "Products/" + productName), {
         serviceType,
-        productImage: productImageUrl,
+        productImage: productImageUrl && productImageUrl,
         productName,
         region,
         town,
@@ -228,6 +248,7 @@ const ProductForm = () => {
         name,
         phone,
         username: user && user.split("@")[0],
+        id: uid,
       })
         .then(() => {
           setProductName("");
@@ -370,11 +391,11 @@ const ProductForm = () => {
           />
         </View>
 
-        <Pressable
+        <TouchableOpacity
           className="h-12 flex-row justify-center items-center bg-green-600  my-4"
           onPress={handleSubmit}>
           <Text className="text-white font-medium text-lg">Submit</Text>
-        </Pressable>
+        </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
   );

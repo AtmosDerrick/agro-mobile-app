@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -14,13 +14,16 @@ import {
   ScrollView,
   Pressable,
 } from "react-native";
-
+import { UserContext } from "../ContextApi/Context";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+
 const Login = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  const { setUser, user, setUserInfo, userInfo } = useContext(UserContext);
 
   const auth = getAuth();
 
@@ -36,7 +39,9 @@ const Login = ({ navigation }) => {
       signInWithEmailAndPassword(auth, emailwork, password)
         .then((userCredential) => {
           // Signed in
-          const user = userCredential.user;
+
+          setUser(userCredential.user);
+          console.log(user, "user1");
           navigation.navigate("Home");
           // ...
         })

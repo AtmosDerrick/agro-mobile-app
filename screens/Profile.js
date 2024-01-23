@@ -146,7 +146,6 @@ const Profile = ({ navigation }) => {
         console.error(error);
       });
   };
-  
 
   const pickImage = async () => {
     setIsLoafing(true);

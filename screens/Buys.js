@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   StyleSheet,
@@ -18,18 +18,20 @@ import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 import Store from "../components/Store";
 
 const Buys = ({ navigation }) => {
+  const [index, setIndex] = useState("");
   const dismissKeyboard = () => {
     Keyboard.dismiss();
   };
 
-  const handleNavigate = () => {
-    navigation.navigate("oneproduct");
+  const handleNavigate = (pname) => {
+    navigation.navigate("oneproduct", { name: pname });
+    console.log("hello me");
   };
   return (
     <TouchableWithoutFeedback
       onPress={dismissKeyboard}
       className="w-full h-full">
-      <View className="mt-2 mx-2  bg-gray-50 flex-row items-center justify-start border-gray-300 border-2 rounded-md">
+      <View className="mt-2 mx-4  bg-gray-50 flex-row items-center justify-start border-gray-300 border-2 rounded-md">
         <TextInput
           placeholder="Search"
           className="mx-2 w-5/6 py-3 px-2 text-gray-800"
@@ -41,7 +43,7 @@ const Buys = ({ navigation }) => {
         </View>
       </View>
       <View className="mt-4 ">
-        <Store handleNavigate={handleNavigate} />
+        <Store handleNavigate={handleNavigate} setIndex={setIndex} />
       </View>
     </TouchableWithoutFeedback>
   );

@@ -13,7 +13,7 @@ import firebase from "firebase/app";
 
 import { err } from "react-native-svg";
 
-const Store = ({ handleNavigate }) => {
+const Store = ({ handleNavigate, setIndex }) => {
   const img1 = require("../images/img1.jpg");
   const img2 = require("../images/img2.jpg");
   const img3 = require("../images/img3.jpg");
@@ -48,80 +48,13 @@ const Store = ({ handleNavigate }) => {
       }
     );
   }, []);
-  fetchproducts && console.log(fetchproducts, "data");
-
-  const products = [
-    {
-      id: 1,
-      productName: "Irrigation Machine",
-      price: "121",
-      image: img1,
-      location: "Kasoa, Eastern Region",
-      serviceType: "Hiring",
-    },
-    {
-      id: 2,
-      productName: "Fertilizer",
-      price: "50",
-      image: img2,
-      location: "Accra, Greater Accra Region",
-      serviceType: "Selling",
-    },
-
-    {
-      id: 3,
-      productName: "Tractor",
-      price: "300",
-      image: img3,
-      location: "Sunyani, Brong-Ahafo Region",
-      serviceType: "Hiring",
-    },
-    {
-      id: 4,
-      productName: "Seeds Pack",
-      price: "25",
-      image: img4,
-      location: "Tamale, Northern Region",
-      serviceType: "Selling",
-    },
-    {
-      id: 5,
-      productName: "Plow",
-      price: "80",
-      image: img5,
-      location: "Takoradi, Western Region",
-      serviceType: "Hiring",
-    },
-    {
-      id: 6,
-      productName: "Gardening Tools Set",
-      price: "40",
-      image: img6,
-      location: "Ho, Volta Region",
-      serviceType: "Selling",
-    },
-    {
-      id: 7,
-      productName: "Sprinkler System",
-      price: "150",
-      image: img7,
-      location: "Wa, Upper West Region",
-      serviceType: "Hiring",
-    },
-    {
-      id: 8,
-      productName: "Pesticides",
-      price: "30",
-      image: img8,
-      location: "Koforidua, Eastern Region",
-      serviceType: "Selling",
-    },
-  ];
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
       className="flex-row justify-between mx-3"
-      onPress={handleNavigate}>
+      onPress={() => {
+        handleNavigate(item.productName);
+      }}>
       <View>
         <View className="w-[160px] h-[160px]">
           {item.productImage && item.productImage.length > 0 ? (
@@ -141,7 +74,7 @@ const Store = ({ handleNavigate }) => {
             </View>
           )}
         </View>
-        <View className="mb-2">
+        <TouchableOpacity className="mb-2">
           <Text className="text-green-500 text-sm font-semibold">
             <Text>{`Gh\u20B5`}</Text>
             {item.price}
@@ -151,7 +84,7 @@ const Store = ({ handleNavigate }) => {
           <Text style={styles.status} className="mb-2">
             {item.serviceType}
           </Text>
-        </View>
+        </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
