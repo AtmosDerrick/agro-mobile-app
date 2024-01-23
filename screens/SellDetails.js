@@ -74,7 +74,7 @@ const SellDetails = ({ navigation }) => {
           className={
             menuClick == "products"
               ? " shadow-md  bg-green-700 py-2 rounded-md px-6"
-              : "shadow-md  bg-green-700 py-2 rounded-md px-6 "
+              : "shadow-md  bg-green-500 py-2  rounded-md px-6 "
           }
           onPress={() => {
             setMenuClick("products");
