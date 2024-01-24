@@ -193,18 +193,18 @@ const SocialMedia = ({ navigation }) => {
               </TouchableOpacity>
 
               {
-                // <TouchableOpacity
-                // className="flex-row gap-x-2"
-                // onPress={() => {
-                //   setShowCommentInput(!showCommentInput);
-                //   setSelectedTweetId(item.id);
-                // }}>
-                // {
-                //   //like comment icons
-                // }
-                // <Fontisto name="comments" size={15} color="gray" />
-                // <Text>{item.comments}</Text>
-                // </TouchableOpacity>
+                <TouchableOpacity
+                  className="flex-row gap-x-2"
+                  onPress={() => {
+                    setShowCommentInput(!showCommentInput);
+                    setSelectedTweetId(item.id);
+                  }}>
+                  {
+                    //like comment icons
+                  }
+                  <Fontisto name="comments" size={15} color="gray" />
+                  <Text>{item.comments}</Text>
+                </TouchableOpacity>
               }
 
               <TouchableOpacity
@@ -223,23 +223,21 @@ const SocialMedia = ({ navigation }) => {
           </View>
         </View>
       </View>
-      {
-        // showCommentInput && selectedTweetId === item.id && (
-        // <View className="flex-row justify-between mx-4 px-4 mt-4 items-center gap-x-2 ">
-        //   <View className="w-5/6">
-        //     <TextInput
-        //       style={styles.commentInput}
-        //       placeholder="Write a comment..."
-        //       multiline
-        //       maxLength={20}
-        //     />
-        //   </View>
-        //   <TouchableOpacity>
-        //     <FontAwesomeIcon name="send" size={20} color="gray" />
-        //   </TouchableOpacity>
-        // </View>
-        // )
-      }
+      {showCommentInput && selectedTweetId === item.id && (
+        <View className="flex-row justify-between mx-4 px-4 mt-4 items-center gap-x-2 ">
+          <View className="w-5/6">
+            <TextInput
+              style={styles.commentInput}
+              placeholder="Write a comment..."
+              multiline
+              maxLength={20}
+            />
+          </View>
+          <TouchableOpacity>
+            <FontAwesomeIcon name="send" size={20} color="gray" />
+          </TouchableOpacity>
+        </View>
+      )}
     </TouchableOpacity>
   );
 
