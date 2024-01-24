@@ -25,7 +25,6 @@ const Buys = ({ navigation }) => {
 
   const handleNavigate = (id) => {
     navigation.navigate("oneproduct", { id });
-    console.log(id);
   };
   return (
     <TouchableWithoutFeedback

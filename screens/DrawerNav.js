@@ -23,7 +23,6 @@ const DrawerNav = () => {
     get(child(dbRef, `users/${username}`))
       .then((snapshot) => {
         if (snapshot.exists()) {
-          console.log(snapshot.val(), "setting user node");
           setUserDetails(snapshot.val());
           setUserInfo(snapshot.val());
         } else {

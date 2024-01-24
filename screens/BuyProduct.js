@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Image, Text, Pressable } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Image,
+  Text,
+  Pressable,
+  ActivityIndicator,
+} from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { database } from "../firebase.config";
@@ -9,17 +16,24 @@ import { getDatabase, ref, child, get } from "firebase/database";
 const BuyProduct = ({ navigation }) => {
   const img2 = require("../images/img2.jpg");
   const [products, setProducts] = useState();
+  const [ready, setReady] = useState(false);
   const route = useRoute();
 
   const id = route.params?.id;
 
   useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    setReady(true);
     const dbRef = ref(getDatabase());
     get(child(dbRef, `Products/${id}`))
       .then((snapshot) => {
         if (snapshot.exists()) {
           console.log(snapshot.val(), "setting producte node");
           setProducts(snapshot.val());
+          setReady(false);
         } else {
           console.log("No data available");
         }
@@ -27,9 +41,7 @@ const BuyProduct = ({ navigation }) => {
       .catch((error) => {
         console.error(error);
       });
-  }, []);
-
-  console.log(id, "iddd");
+  };
 
   // const product = {
   //   id: 1, // Unique identifier for the product
@@ -63,16 +75,26 @@ const BuyProduct = ({ navigation }) => {
       });
   }, [navigation]);
 
+  if (ready) {
+    <ActivityIndicator color={"#ff0000"} animating size={"large"} />;
+  }
+
   return (
     <ScrollView className="w-full bg-gray-200 mb-4 ">
-      {products && (
+      {products ? (
         <View>
           <View className="bg-gray-50 pb-4">
             <View className="p-2">
-              <Image
-                source={{ uri: products.productImage[0] }}
-                className="w-full h-[250px]"
-              />
+              {products ? (
+                <View>
+                  <Image
+                    source={{ uri: products.productImage[0] }}
+                    className="w-full h-[250px]"
+                  />
+                </View>
+              ) : (
+                ""
+              )}
             </View>
             <View className="px-4 mt-4 ">
               <View className="flex-row  gap-x-2 mb-2">
@@ -164,6 +186,10 @@ const BuyProduct = ({ navigation }) => {
               <Text className="text-green-500">Request Seller to Call</Text>
             </Pressable>
           </View>
+        </View>
+      ) : (
+        <View className="w-full h-full flex-row justify-center items-center">
+          <ActivityIndicator color={"#ff0000"} animating size={"large"} />
         </View>
       )}
     </ScrollView>

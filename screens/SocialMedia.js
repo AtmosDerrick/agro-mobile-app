@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   StyleSheet,
@@ -11,10 +11,26 @@ import {
 } from "react-native";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 import Fontisto from "react-native-vector-icons/Fontisto";
+import { UserContext } from "../ContextApi/Context";
+
+import {
+  getDatabase,
+  ref,
+  onValue,
+  child,
+  push,
+  update,
+  get,
+} from "firebase/database";
 
 const SocialMedia = ({ navigation }) => {
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [selectedTweetId, setSelectedTweetId] = useState(null);
+  const [tweets, setTweets] = useState([]);
+  const [ready, setReady] = useState(false);
+  const [pastPosts, setPastPost] = useState();
+  const [likeLoading, setLikeLoading] = useState(false);
+  const { setUser, user, setUserInfo, userInfo } = useContext(UserContext);
 
   const img1 = require("../images/tweet1.jpg");
   const img2 = require("../images/tweet2.jpg");
@@ -28,80 +44,81 @@ const SocialMedia = ({ navigation }) => {
   const tweetimg4 = require("../images/tweetimage4.jpg");
   const tweetimg5 = require("../images/tweetimage5.jpg");
 
-  const agricultureTweets = [
-    {
-      id: 1,
-      profileImage: img1,
-      name: "John Farmer",
-      username: "@johnfarmer",
-      postDuration: "2 hrs ago",
-      tweet:
-        "Just harvested the best crop of tomatoes from my farm! 🍅 #FarmLife #Agriculture",
-      likes: 25,
-      comments: 8,
-    },
-    {
-      id: 2,
-      profileImage: img2,
-      name: "Emily Agro",
-      username: "@emily_agro",
-      postDuration: "4 hrs ",
-      tweet:
-        "Excited to share my latest blog post on sustainable farming practices. Check it out! #SustainableAg #Farming",
-      likes: 45,
-      comments: 12,
-      images: [tweetimg1], // Add an "images" property with an array of images
-    },
-    {
-      id: 3,
-      profileImage: img3,
-      name: "Green Fields Co.",
-      username: "@greenfields",
-      postDuration: "6 hrs ",
-      tweet:
-        "Our team is working hard to bring you fresh, organic produce straight from our fields. Stay tuned for updates! 🌱 #OrganicFarming",
-      likes: 60,
-      comments: 20,
-    },
-    {
-      id: 4,
-      profileImage: img4,
-      name: "Agritech Innovations",
-      username: "@agritech_inno",
-      postDuration: "10 hrs ",
-      tweet:
-        "Introducing our new smart irrigation system! Save water, increase efficiency. #Agritech #Innovation",
-      likes: 32,
-      comments: 10,
-      images: [tweetimg3], // Add an "images" property with an array of images
-    },
-    {
-      id: 5,
-      profileImage: img5,
-      name: "Farmers United",
-      username: "@farmers_united",
-      postDuration: "1 day ",
-      tweet:
-        "Join us this weekend for a farmers' market showcasing the best local produce. Support local farmers! 🚜🌾 #FarmersMarket",
-      likes: 75,
-      comments: 15,
-      images: [tweetimg4], // Add an "images" property with an array of images
-    },
-  ];
+  const db = getDatabase();
+  const dbRef = ref(getDatabase());
 
-  const [likeStates, setLikeStates] = useState(
-    agricultureTweets.map(() => false)
-  );
+  useEffect(() => {
+    fetchData();
+    console.log("dont move");
+  }, []);
 
-  const [bookmarkStates, setbookmarkStates] = useState(
-    agricultureTweets.map(() => false)
-  );
+  const fetchData = async () => {
+    const starCountRef = ref(db, "Posts/");
+    onValue(
+      starCountRef,
+      (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          // Convert the object values into an array
+          const dataArray = Object.values(data);
+          setTweets(dataArray);
+        }
+        setReady(false);
+      },
+      (error) => {
+        console.error("Error fetching data:", error);
+        setError("Error fetching data");
+        setReady(false);
+      }
+    );
+  };
+
+  const [bookmarkStates, setbookmarkStates] = useState(tweets.map(() => false));
 
   const handleLikePress = (index) => {
-    // Update the like state for the clicked tweet
-    const newLikeStates = [...likeStates];
-    newLikeStates[index] = !newLikeStates[index];
-    setLikeStates(newLikeStates);
+    const dbRef = ref(getDatabase());
+
+    // Fetch the post data
+    get(child(dbRef, `Posts/${index}`))
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          // Use the callback function to get the latest state
+          setPastPost((prevPost) => {
+            const pastPosts = snapshot.val();
+
+            // Check if the user's username is already in the like array
+            const isUserLiked =
+              pastPosts.like && pastPosts.like.includes(userInfo.username);
+
+            // Toggle the like status
+            const updatedLikes = isUserLiked
+              ? pastPosts.like.filter(
+                  (username) => username !== userInfo.username
+                )
+              : [...(pastPosts.like || []), userInfo.username];
+
+            // Update the Firebase database with the updated like array
+            update(child(dbRef, `Posts/${index}`), { like: updatedLikes })
+              .then(() => {
+                console.log("Like status updated successfully");
+              })
+              .catch((error) => {
+                console.error("Error updating like status:", error);
+              });
+
+            // Return the updated post data
+            return {
+              ...prevPost,
+              like: updatedLikes,
+            };
+          });
+        } else {
+          console.log("No data available");
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   const handleBookmarkPress = (index) => {
@@ -115,56 +132,87 @@ const SocialMedia = ({ navigation }) => {
     <TouchableOpacity
       className="bg-[#f0f0f0] my-4 border-b-[0.2px] pb-2 border-b-gray-400 "
       onPress={() => {
-        navigation.navigate("onetweet");
+        navigation.navigate("onetweet", {
+          id: item.id,
+          userInfo,
+        });
       }}>
       <View className="flex-row gap-x-1 ">
         <Image
-          source={item.profileImage}
+          source={{ uri: item.profileImage }}
           className="w-[50px] h-[50px] rounded-full "
         />
+
         <View className="">
           <View className="flex-row gap-x-2">
-            <Text style={{ fontWeight: "bold" }}>{item.name}</Text>
-            <Text className="text-xs text-gray-600">{item.username}</Text>
+            <Text style={{ fontWeight: "bold" }}>
+              {item.profileFirstName} {item.profileLastName}
+            </Text>
+            <Text className="text-xs text-gray-600">@{item.username}</Text>
+
             <Text className="text-xs">{item.postDuration}</Text>
           </View>
           <View className="pr-16">
             <View className="">
-              <Text className="text-sm pb-1  ">{item.tweet}</Text>
-              {item.images && item.images.length > 0 ? (
+              <Text className="text-sm pb-1  ">{item.text}</Text>
+              {item.postImage && item.postImage.length > 0 ? (
                 // Render the image if it exists
-                <Image
-                  source={item.images[0]}
-                  style={{ width: "100%", height: 200, borderRadius: 10 }}
-                  resizeMode="cover"
-                />
+                <View className=" w-full h-[3rem] mt-3">
+                  <Image
+                    source={{ uri: item.postImage[0] }}
+                    style={{ width: 250, height: 150, borderRadius: 10 }}
+                    resizeMode="cover"
+                  />
+                </View>
               ) : null}
             </View>
-            <View className="flex-row justify-start mt-2 gap-x-8">
+            <View className="flex-row justify-start mt-2 gap-x-8 items-center">
               <TouchableOpacity
                 className="flex-row gap-x-2"
-                onPress={() => handleLikePress(index)}>
+                onPress={() => handleLikePress(item.id)}>
+                {
+                  //like icons
+                }
                 <Fontisto
-                  name={likeStates[index] ? "like" : "like"}
+                  name={
+                    item.like && item.like.includes(userInfo.username)
+                      ? "like"
+                      : "like"
+                  }
                   size={20}
-                  color={likeStates[index] ? "blue" : "gray"}
+                  color={
+                    item.like && item.like.includes(userInfo.username)
+                      ? "blue"
+                      : "gray"
+                  }
                 />
-                <Text>{item.likes}</Text>
+
+                <View className="pt-1">
+                  <Text>{item.like && item.like.length}</Text>
+                </View>
               </TouchableOpacity>
 
-              <TouchableOpacity
-                className="flex-row gap-x-2"
-                onPress={() => {
-                  setShowCommentInput(!showCommentInput);
-                  setSelectedTweetId(item.id);
-                }}>
-                <Fontisto name="comments" size={15} color="gray" />
-                <Text>{item.comments}</Text>
-              </TouchableOpacity>
+              {
+                // <TouchableOpacity
+                // className="flex-row gap-x-2"
+                // onPress={() => {
+                //   setShowCommentInput(!showCommentInput);
+                //   setSelectedTweetId(item.id);
+                // }}>
+                // {
+                //   //like comment icons
+                // }
+                // <Fontisto name="comments" size={15} color="gray" />
+                // <Text>{item.comments}</Text>
+                // </TouchableOpacity>
+              }
 
               <TouchableOpacity
                 className="flex-row gap-x-2"
                 onPress={() => handleBookmarkPress(index)}>
+                {
+                  //like comment
+                }
                 <Fontisto
                   name={bookmarkStates[index] ? "bookmark-alt" : "bookmark"}
                   size={20}
@@ -175,28 +223,30 @@ const SocialMedia = ({ navigation }) => {
           </View>
         </View>
       </View>
-      {showCommentInput && selectedTweetId === item.id && (
-        <View className="flex-row justify-between mx-4 items-center gap-x-2">
-          <View className="w-5/6">
-            <TextInput
-              style={styles.commentInput}
-              placeholder="Write a comment..."
-              multiline
-              maxLength={20}
-            />
-          </View>
-          <TouchableOpacity>
-            <FontAwesomeIcon name="send" size={20} color="gray" />
-          </TouchableOpacity>
-        </View>
-      )}
+      {
+        // showCommentInput && selectedTweetId === item.id && (
+        // <View className="flex-row justify-between mx-4 px-4 mt-4 items-center gap-x-2 ">
+        //   <View className="w-5/6">
+        //     <TextInput
+        //       style={styles.commentInput}
+        //       placeholder="Write a comment..."
+        //       multiline
+        //       maxLength={20}
+        //     />
+        //   </View>
+        //   <TouchableOpacity>
+        //     <FontAwesomeIcon name="send" size={20} color="gray" />
+        //   </TouchableOpacity>
+        // </View>
+        // )
+      }
     </TouchableOpacity>
   );
 
   return (
-    <KeyboardAvoidingView className="mx-2">
+    <KeyboardAvoidingView className="mx-2 flex-1">
       <FlatList
-        data={agricultureTweets}
+        data={tweets}
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
       />

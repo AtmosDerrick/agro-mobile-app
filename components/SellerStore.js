@@ -98,7 +98,7 @@ const SellerStore = ({ navigation, handleOrder }) => {
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
-      className="flex-row justify-start mx-3 mb-2 bg-gray-200 rounded-md shadow-sm "
+      className="flex-row justify-start mx-3 mb-2 bg-gray-200 rounded-md py-2 px-1 shadow-sm "
       onPress={() => {
         if (item.id) {
           handleOrder(item.id);

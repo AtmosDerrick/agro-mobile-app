@@ -10,6 +10,7 @@ import {
   SafeAreaView,
   Platform,
   Keyboard,
+  ActivityIndicator,
 } from "react-native";
 import DropdownSelect from "react-native-input-select";
 import * as ImagePicker from "expo-image-picker";
@@ -304,23 +305,31 @@ const ProductForm = () => {
             selectedImages ? "flex-row justify-between items-center" : ""
           }>
           <View className="flex-row justify-start gap-2 rounded-lg">
-            {selectedImages
-              ? selectedImages.map((imageUri, index) => (
-                  <View className=" ">
-                    <Image
-                      key={index}
-                      source={{ uri: imageUri }}
-                      className="w-20 h-20 rounded-md shadow-md"
-                    />
-                  </View>
-                ))
-              : ""}
+            {selectedImages ? (
+              selectedImages.map((imageUri, index) => (
+                <View className=" ">
+                  <Image
+                    key={index}
+                    source={{ uri: imageUri }}
+                    className="w-20 h-20 rounded-md"
+                  />
+                </View>
+              ))
+            ) : (
+              <View>
+                <ActivityIndicator color={"#ff0000"} animating size={"large"} />
+              </View>
+            )}
           </View>
-          <TouchableOpacity onPress={pickMultipleImages} className="w-1/2">
-            <View className="w-16 h-16 bg-green-500  rounded-xl lex-row justify-center items-center">
-              <Text className="text-lg font-semibold">+</Text>
-            </View>
-          </TouchableOpacity>
+          <View className="w-full flex-row justify-start">
+            <TouchableOpacity
+              onPress={pickMultipleImages}
+              className="flex-row justify-start">
+              <View className="w-20 h-20 bg-green-500  rounded-xl lex-row justify-center items-center ml-2">
+                <Text className="text-lg font-semibold">+</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
         <Text className="text-xs text-gray-400 pt-2">
           First Picture is the title picture

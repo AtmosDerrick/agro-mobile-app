@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Image,
+  Text,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { getDatabase, ref, onValue } from "firebase/database";
 
@@ -60,7 +67,7 @@ const Store = ({ handleNavigate, setIndex }) => {
             //   className="w-[155px] h-[155px] rounded-xl "
             // />
             <View>
-              <Text>Hello</Text>
+              <ActivityIndicator color={"#ff0000"} animating size={"large"} />
             </View>
           )}
         </View>
@@ -82,8 +89,8 @@ const Store = ({ handleNavigate, setIndex }) => {
   return (
     <View className="pb-12">
       {ready ? (
-        <View>
-          <Text>Loading...</Text>
+        <View className="h-full flex-row items-center justify-center">
+          <ActivityIndicator color={"#ff0000"} animating size={"large"} />
         </View>
       ) : error ? (
         <View>
