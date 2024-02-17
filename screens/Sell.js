@@ -186,7 +186,6 @@ const ProductForm = () => {
     try {
       const uploadedImageUrls = await Promise.all(
         images.map(async (image) => {
-          console.log(image, "llloooo");
           const uploadURL = await uploadImageAsync(image);
           console.log(uploadURL, "ooop");
 

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import { View, TouchableOpacity, Image } from "react-native";
+import { View, TouchableOpacity, Image, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 
@@ -17,26 +17,33 @@ const DrawerNav = () => {
   const [userDetails, setUserDetails] = useState({});
 
   useEffect(() => {
-    const username = user.email.split("@")[0];
-    console.log(username, "username");
-    const dbRef = ref(getDatabase());
-    get(child(dbRef, `users/${username}`))
-      .then((snapshot) => {
-        if (snapshot.exists()) {
-          setUserDetails(snapshot.val());
-          setUserInfo(snapshot.val());
-        } else {
-          console.log("No data available");
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
+    if (user) {
+      const username = user.email.split("@")[0];
+      console.log(username, "username");
+      const dbRef = ref(getDatabase());
+      get(child(dbRef, `users/${username}`))
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            setUserDetails(snapshot.val());
+            setUserInfo(snapshot.val());
+          } else {
+            console.log("No data available");
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  }, [user]);
 
   const renderHeaderRight = () => (
     <View
       style={{ flexDirection: "row", alignItems: "center", marginRight: 6 }}>
+      <View className="w-full">
+        <Text className=" font-bold text-base uppercase text-white drop-shadow-md">
+          AgriCon
+        </Text>
+      </View>
       <TouchableOpacity className="mr-4">
         <FontAwesomeIcon name="bell" size={20} color="white" />
       </TouchableOpacity>
@@ -50,7 +57,10 @@ const DrawerNav = () => {
   );
 
   return (
-    <Drawer.Navigator drawerContent={(props) => <DrawerContents {...props} />}>
+    <Drawer.Navigator
+      drawerContent={(props) => (
+        <DrawerContents {...props} screenOptions={{ drawerType: "front" }} />
+      )}>
       <Drawer.Screen
         name="mainpage"
         component={Home}
@@ -58,6 +68,9 @@ const DrawerNav = () => {
           title: "", // Hide the title
           headerStyle: {
             backgroundColor: "green",
+            borderWidth: 0,
+            elevation: 0,
+            shadowOpacity: 0,
           },
           headerTintColor: "#fff",
           headerTitleStyle: {

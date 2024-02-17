@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Image,
+  ActivityIndicator,
 } from "react-native";
 
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
@@ -22,6 +23,7 @@ const Signup = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [id, setId] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const [alert, setAlert] = useState({
     status: false,
@@ -32,6 +34,7 @@ const Signup = ({ navigation }) => {
     "py-2 px-3 border-b-[1px] mb-6 border-gray-700  text-gray-900";
 
   const handleSignup = () => {
+    setIsLoading(true);
     const auth = getAuth();
     const database = getDatabase();
 
@@ -44,6 +47,7 @@ const Signup = ({ navigation }) => {
       confirmPassword !== ""
     ) {
       if (password === confirmPassword) {
+        const usernameLower = username.toLowerCase();
         createUserWithEmailAndPassword(auth, username + "@agro.com", password)
           .then((userCredential) => {
             // Signed up
@@ -53,7 +57,7 @@ const Signup = ({ navigation }) => {
               firstName,
               lastName,
               email,
-              username,
+              username: usernameLower,
               profileImg: "",
               coverImage: "",
               city: "",
@@ -62,6 +66,7 @@ const Signup = ({ navigation }) => {
               category: "",
             })
               .then(() => {
+                setIsLoading(false);
                 navigation.navigate("profile");
               })
               .catch((err) => {
@@ -73,6 +78,7 @@ const Signup = ({ navigation }) => {
           .catch((error) => {
             const errorCode = error.code;
             const errorMessage = error.message;
+            setIsLoading(false);
             console.log(errorMessage, errorCode);
             setAlert({
               status: true,
@@ -116,10 +122,8 @@ const Signup = ({ navigation }) => {
         });
       }, 3000);
     }
-
-    navigation.navigate("profile");
   };
-  return (
+  return !isLoading ? (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
       <SafeAreaView className="w-full h-full mb-12">
         <ScrollView
@@ -204,6 +208,10 @@ const Signup = ({ navigation }) => {
         </ScrollView>
       </SafeAreaView>
     </KeyboardAvoidingView>
+  ) : (
+    <View className="bg-white w-full h-full flex-row justify-center items-center">
+      <ActivityIndicator size="large" color="green" />
+    </View>
   );
 };
 

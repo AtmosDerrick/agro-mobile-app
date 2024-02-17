@@ -7,19 +7,12 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-import { FlatList } from "react-native-gesture-handler";
+import { FlatList, ScrollView } from "react-native-gesture-handler";
 import { getDatabase, ref, onValue } from "firebase/database";
 
-const Store = ({ handleNavigate, setIndex }) => {
-  const img1 = require("../images/img1.jpg");
-  const img2 = require("../images/img2.jpg");
-  const img3 = require("../images/img3.jpg");
-  const img4 = require("../images/img4.jpg");
-  const img5 = require("../images/img5.jpg");
-  const img6 = require("../images/img6.jpg");
-  const img7 = require("../images/img7.jpg");
-  const img8 = require("../images/img8.jpg");
+const Store = ({ handleNavigate, setIndex, search }) => {
   const [fetchproducts, setFetchProducts] = useState([]);
+  const [defaultProduct, setDefaultProduct] = useState([]);
   const [ready, setReady] = useState(true);
   const [error, setError] = useState(null);
 
@@ -35,6 +28,7 @@ const Store = ({ handleNavigate, setIndex }) => {
           // Convert the object values into an array
           const dataArray = Object.values(data);
           setFetchProducts(dataArray);
+          setDefaultProduct(dataArray);
         }
         setReady(false);
       },
@@ -45,10 +39,28 @@ const Store = ({ handleNavigate, setIndex }) => {
       }
     );
   }, []);
+  useEffect(() => {
+    setFetchProducts(defaultProduct);
+  }, [defaultProduct]);
+
+  useEffect(() => {
+    if (search !== "") {
+      if (search.length >= 3) {
+        const filteredProducts = defaultProduct.filter((product) => {
+          return product.productName
+            .toLowerCase()
+            .includes(search.toLowerCase());
+        });
+        setFetchProducts(filteredProducts);
+      }
+    } else {
+      setFetchProducts(defaultProduct);
+    }
+  }, [search]);
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
-      className="flex-row justify-between mx-3"
+      className="flex-row justify-between gap-4 mx-auto  mb-6"
       onPress={() => {
         handleNavigate(item.id);
       }}>
@@ -58,7 +70,7 @@ const Store = ({ handleNavigate, setIndex }) => {
             // Render the first image in the array
             <Image
               source={{ uri: item.productImage[0] }}
-              className="w-[155px] h-[155px] rounded-xl "
+              className="w-[155px] h-[155px] rounded-xl border-[1px] border-gray-300 "
             />
           ) : (
             // Render a default image or some placeholder if no images are available
@@ -71,23 +83,25 @@ const Store = ({ handleNavigate, setIndex }) => {
             </View>
           )}
         </View>
-        <TouchableOpacity className="mb-2">
-          <Text className="text-green-500 text-sm font-semibold">
-            <Text>{`Gh\u20B5`}</Text>
-            {item.price}
-          </Text>
+        <TouchableOpacity className="mb-2 ">
+          <View className="flex-row justify-between">
+            <Text className="text-green-500 text-sm font-semibold">
+              <Text>{`Gh\u20B5`}</Text>
+              {item.price}
+            </Text>
+            <Text style={styles.status} className="mr-2">
+              {item.serviceType}
+            </Text>
+          </View>
           <Text className=" font-medium text-base">{item.productName}</Text>
           <Text className="text-xs mt-[-2px]">{item.region}</Text>
-          <Text style={styles.status} className="mb-2">
-            {item.serviceType}
-          </Text>
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
 
   return (
-    <View className="pb-12">
+    <ScrollView className="pb-12 bg-white">
       {ready ? (
         <View className="h-full flex-row items-center justify-center">
           <ActivityIndicator color={"#ff0000"} animating size={"large"} />
@@ -105,13 +119,14 @@ const Store = ({ handleNavigate, setIndex }) => {
           contentContainerStyle={styles.flatListContainer}
         />
       )}
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   flatListContainer: {
     paddingHorizontal: 6, // Add horizontal padding for a nice spread
+    paddingBottom: 6,
   },
   itemContainer: {
     width: "100%",

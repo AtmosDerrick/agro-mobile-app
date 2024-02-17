@@ -24,7 +24,19 @@ export default function App() {
               headerShown: false,
             }}
           />
-          <Stack.Screen name="login" component={Login} />
+          <Stack.Screen
+            name="login"
+            component={Login}
+            options={{
+              headerShown: false,
+              headerStyle: {
+                backgroundColor: "#5d1425",
+                borderColor: "#5d1425",
+              },
+              headerTitle: "",
+              headerTintColor: "white",
+            }}
+          />
           <Stack.Screen name="sign up" component={Signup} />
           <Stack.Screen name="profile" component={Profile} />
 
@@ -33,6 +45,7 @@ export default function App() {
             component={DrawerNav}
             options={{
               headerShown: false,
+              headerShadowVisible: false,
             }}
           />
         </Stack.Navigator>

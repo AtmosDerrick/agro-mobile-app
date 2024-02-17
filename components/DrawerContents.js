@@ -35,46 +35,76 @@ const DrawerContents = ({ navigation }) => {
               alignItems: "center",
               justifyContent: "start",
               alignItems: "center",
-              gap: "12",
             }}>
-            <View>
-              <FontAwesomeIcon name="user" size={24} color="green" />
-            </View>
-            <Text style={{ fontSize: 18 }} className="font-semibold">
+            {
+              // <View>
+              // <FontAwesomeIcon name="user" size={24} color="green" />
+              // </View>
+            }
+            <Text
+              style={{ fontSize: 18 }}
+              className="font-semibold text-green-700">
               Profile
             </Text>
           </Pressable>
         </View>
-        <View style={{ marginLeft: 8, marginTop: 32 }}>
+
+        <View style={{ marginLeft: 8, marginTop: 24 }}>
           <Pressable
             style={{
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "start",
               alignItems: "center",
-              gap: "12",
             }}>
-            <View>
-              <FontAwesomeIcon name="bookmark" size={24} color="green" />
-            </View>
-            <Text style={{ fontSize: 18 }} className="font-semibold">
+            {
+              // <View>
+              // <FontAwesomeIcon name="user" size={24} color="green" />
+              // </View>
+            }
+            <Text
+              style={{ fontSize: 18 }}
+              className="font-semibold text-green-700">
+              Offers
+            </Text>
+          </Pressable>
+        </View>
+        <View style={{ marginLeft: 8, marginTop: 24 }}>
+          <Pressable
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "start",
+              alignItems: "center",
+            }}>
+            {
+              // <View>
+              // <FontAwesomeIcon name="bookmark" size={24} color="green" />
+              // </View>
+            }
+            <Text
+              style={{ fontSize: 18 }}
+              className="font-semibold text-green-700">
               BookMarks
             </Text>
           </Pressable>
         </View>
-        <View style={{ marginLeft: 8, marginTop: 32 }}>
+        <View style={{ marginLeft: 8, marginTop: 24 }}>
           <Pressable
             style={{
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "start",
               alignItems: "center",
-              gap: "12",
             }}>
-            <View>
-              <FontAwesomeIcon name="buysellads" size={24} color="green" />
-            </View>
-            <Text style={{ fontSize: 18 }} className="font-semibold">
+            {
+              //   <View>
+              // <FontAwesomeIcon name="buysellads" size={24} color="green" />
+              //   </View>
+            }
+            <Text
+              style={{ fontSize: 18 }}
+              className="font-semibold text-green-700">
               Ads
             </Text>
           </Pressable>

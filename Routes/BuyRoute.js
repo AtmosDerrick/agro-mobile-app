@@ -19,7 +19,7 @@ const BuyRoute = () => {
       <Stack.Screen
         name="oneproduct"
         component={BuyProduct}
-        options={{ title: "Product" }}
+        options={{ title: "Product", headerShown: false }}
       />
     </Stack.Navigator>
   );

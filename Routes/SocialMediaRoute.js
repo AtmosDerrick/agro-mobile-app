@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import SocialMedia from "../screens/SocialMedia";
 import AddTweet from "../screens/AddTweet";
 import OneTweet from "../screens/oneTweet";
+import Reply from "../screens/Reply";
 
 const SocialMediaRoute = () => {
   const Stack = createNativeStackNavigator();
@@ -29,6 +30,14 @@ const SocialMediaRoute = () => {
       <Stack.Screen
         name="onetweet"
         component={OneTweet}
+        options={{
+          title: "",
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="reply"
+        component={Reply}
         options={{
           title: "",
           headerShown: true,

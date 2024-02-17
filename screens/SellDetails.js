@@ -70,25 +70,29 @@ const SellDetails = ({ navigation }) => {
           // </View>
         }
 
-        <TouchableOpacity
-          className={
-            menuClick == "products"
-              ? " shadow-md  bg-green-700 py-2 rounded-md px-6"
-              : "shadow-md  bg-green-500 py-2  rounded-md px-6  "
-          }
-          onPress={() => {
-            setMenuClick("products");
-          }}>
-          {searchActive ? (
-            <Text className="text-lg font-semibold text-white rounded-full ">
-              +
-            </Text>
-          ) : (
-            <View className="flex-row justify-between items-center gap-2 ">
-              <Text className="text-white font-medium">Products</Text>
-            </View>
-          )}
-        </TouchableOpacity>
+        <View>
+          <TouchableOpacity
+            className={
+              menuClick == "products"
+                ? " shadow-md  bg-green-700 py-2 rounded-md px-6 opacity-30"
+                : "shadow-md  bg-green-500 py-2  rounded-md px-6  "
+            }
+            onPress={() => {
+              setMenuClick("products");
+            }}>
+            {searchActive ? (
+              <Text className="text-lg font-semibold text-white rounded-full ">
+                +
+              </Text>
+            ) : (
+              <View className="flex-row justify-between">
+                <View className="flex-row justify-between items-center gap-2 ">
+                  <Text className="text-white font-medium">My Products</Text>
+                </View>
+              </View>
+            )}
+          </TouchableOpacity>
+        </View>
       </View>
 
       {menuClick === "products" ? (
@@ -101,7 +105,7 @@ const SellDetails = ({ navigation }) => {
         className={
           searchActive
             ? "bg-green-500  px-4 flex-row justify-center items-center mt-2 rounded-full shadow-md "
-            : "  flex-row justify-center items-center mt-2  rounded-full py-3 px-3 shadow-lg mr-4 bg-green-600 absolute bottom-3 right-3"
+            : "  flex-row justify-center items-center mt-2  rounded-full py-3 px-3 shadow-lg mr-4 bg-orange-600 absolute bottom-32 right-3 "
         }
         onPress={() => {
           setMenuClick("add");
@@ -112,7 +116,7 @@ const SellDetails = ({ navigation }) => {
           <View className="flex-row justify-between items-center gap-2">
             <FontAwesomeIcon
               name="plus"
-              size={searchActive ? 20 : 24}
+              size={searchActive ? 20 : 20}
               color={"white"}
             />
           </View>

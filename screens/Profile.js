@@ -9,6 +9,7 @@ import {
   ScrollView,
   Image,
   SafeAreaView,
+  ActivityIndicator,
 } from "react-native";
 import DropdownSelect from "react-native-input-select";
 import * as ImagePicker from "expo-image-picker";
@@ -32,6 +33,7 @@ const Profile = ({ navigation }) => {
   const [selectedImagesurl, setSelectedImagesurl] = useState(null);
   const [profileImagesurl, setProfileImagesurl] = useState(null);
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [gender, setGender] = useState("");
   const [town, settown] = useState("");
@@ -59,7 +61,7 @@ const Profile = ({ navigation }) => {
       if (user) {
         const userEmail = user.email;
         setUser(userEmail);
-      } else {
+              } else {
         // User is signed out
         console.log("user is logout");
         // ...
@@ -93,6 +95,7 @@ const Profile = ({ navigation }) => {
 
   const handleSave = () => {
     // Add your logic to save the profile
+    setIsLoading(true);
 
     console.log("Gender:", gender);
     console.log("Location:", selectedRegion);
@@ -101,8 +104,8 @@ const Profile = ({ navigation }) => {
     console.log("Agriculture Group:", agricultureGroup);
 
     const splitEmail = user.split("@")[0];
-    console.log(splitEmail);
 
+    //update the profile
     get(child(dbRef, `users/${splitEmail}`))
       .then((snapshot) => {
         if (snapshot.exists()) {
@@ -112,7 +115,7 @@ const Profile = ({ navigation }) => {
             firstName: data.firstName,
             lastName: data.lastName,
             email: data.email,
-            username: data.username,
+            username: splitEmail,
             profileImg: profileImagesurl,
             coverImage: selectedImages,
             profileImage: profileImages,
@@ -126,6 +129,7 @@ const Profile = ({ navigation }) => {
           update(ref(db), updates)
             .then(() => {
               console.log("Data edit successfully");
+              setIsLoading(false);
               navigation.navigate("Home");
             })
             .catch((error) => {
@@ -256,7 +260,7 @@ const Profile = ({ navigation }) => {
   const inputClass =
     "py-2 px-3 border-b-[1px] mb-6 border-gray-700  text-gray-900";
 
-  return (
+  return !isLoading ? (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
       <SafeAreaView className="w-full h-full mb-12">
         <ScrollView contentContainerStyle={styles.container}>
@@ -423,6 +427,10 @@ const Profile = ({ navigation }) => {
         </ScrollView>
       </SafeAreaView>
     </KeyboardAvoidingView>
+  ) : (
+    <View className="bg-white w-full h-full flex-row justify-center items-center">
+      <ActivityIndicator size="large" color="green" />
+    </View>
   );
 };
 

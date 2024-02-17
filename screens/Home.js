@@ -14,6 +14,7 @@ import BuyRoute from "../Routes/BuyRoute";
 import SocialMediaRoute from "../Routes/SocialMediaRoute";
 import ExpertRoute from "../Routes/ExpertRoute";
 import SellerRoute from "../Routes/SellRoute";
+import { faL } from "@fortawesome/free-solid-svg-icons";
 
 const CustomTitleComponent = () => {
   return (
@@ -40,32 +41,61 @@ const Home = ({ navigate }) => {
 
   return (
     <Tab.Navigator
+      // screenOptions={({ route }) => ({
+      //   activeTintColor: "green", // Change the color when the tab is active
+      //   inactiveTintColor: "gray", // Change the color when the tab is inactive
+      //   tabBarIcon: ({ color, size }) => {
+      //     let iconComponent;
+
+      //     if (route.name === "Buy") {
+      //       iconComponent = (
+      //         <FontAwesomeIcon name="shopping-cart" size={24} color={color} />
+      //       );
+      //     } else if (route.name === "sell") {
+      //       iconComponent = (
+      //         <FontAwesomeIcon name="tag" size={24} color={color} />
+      //       );
+      //     } else if (route.name === "media") {
+      //       iconComponent = (
+      //         <FontAwesomeIcon name="slideshare" size={24} color={color} />
+      //       );
+      //     } else if (route.name === "Experts") {
+      //       iconComponent = (
+      //         <Entypo name="help-with-circle" size={24} color={color} />
+      //       );
+      //     }
+
+      //     return iconComponent;
+      //   },
+      // })}
+
       screenOptions={({ route }) => ({
-        activeTintColor: "green", // Change the color when the tab is active
-        inactiveTintColor: "gray", // Change the color when the tab is inactive
-        tabBarIcon: ({ color, size }) => {
-          let iconComponent;
-
-          if (route.name === "Buy") {
-            iconComponent = (
-              <FontAwesomeIcon name="shopping-cart" size={24} color={color} />
-            );
-          } else if (route.name === "sell") {
-            iconComponent = (
-              <FontAwesomeIcon name="tag" size={24} color={color} />
-            );
-          } else if (route.name === "media") {
-            iconComponent = (
-              <FontAwesomeIcon name="slideshare" size={24} color={color} />
-            );
-          } else if (route.name === "Experts") {
-            iconComponent = (
-              <Entypo name="help-with-circle" size={24} color={color} />
-            );
-          }
-
-          return iconComponent;
+        headerTitle: "",
+        headerTitleAlign: "center",
+        headerStyle: {
+          backgroundColor: "#5d1425",
         },
+        headerTintColor: "#fff",
+        textAlign: "left",
+        headerTitleStyle: {
+          fontWeight: "bold",
+        },
+        tabBarShowLabel: false,
+        tabBarHideOnKeyboard: true,
+        tabBarStyle: {
+          display: "flex",
+          position: "absolute",
+          bottom: 20,
+          left: 25,
+          right: 25,
+          elevation: 5,
+          backgroundColor: "green",
+          borderRadius: 15,
+          height: 72,
+        },
+
+        tabBarShowLabel: false,
+        headerShown: false,
       })}>
       <Tab.Screen
         name="Buy"
@@ -81,6 +111,31 @@ const Home = ({ navigate }) => {
           headerTitleStyle: {
             fontWeight: "bold",
           },
+          tabBarIcon: ({ focused }) => (
+            <View
+              style={{
+                top: Platform.OS === "ios" ? 10 : 0,
+              }}>
+              <View
+                style={[
+                  {
+                    padding: 6,
+
+                    borderRadius: 12,
+                    borderWidth: 2,
+                    borderColor: focused ? "transparent" : "transparent",
+                    backgroundColor: focused ? "white" : "green",
+                  },
+                  focused ? {} : { borderWidth: 0 }, // If not focused, remove the border
+                ]}>
+                <FontAwesomeIcon
+                  name="shopping-cart"
+                  size={24}
+                  color={focused ? "green" : "white"}
+                />
+              </View>
+            </View>
+          ),
           tabBarShowLabel: false,
         }}
       />
@@ -98,6 +153,31 @@ const Home = ({ navigate }) => {
           headerTitleStyle: {
             fontWeight: "bold",
           },
+          tabBarIcon: ({ focused }) => (
+            <View
+              style={{
+                top: Platform.OS === "ios" ? 10 : 0,
+              }}>
+              <View
+                style={[
+                  {
+                    padding: 6,
+
+                    borderRadius: 12,
+                    borderWidth: 2,
+                    borderColor: focused ? "transparent" : "transparent",
+                    backgroundColor: focused ? "white" : "green",
+                  },
+                  focused ? {} : { borderWidth: 0 }, // If not focused, remove the border
+                ]}>
+                <FontAwesomeIcon
+                  name="tag"
+                  size={24}
+                  color={focused ? "green" : "white"}
+                />
+              </View>
+            </View>
+          ),
           tabBarLabel: () => null,
           tabBarShowLabel: false,
           tabBarBadge: 5,
@@ -117,11 +197,37 @@ const Home = ({ navigate }) => {
           headerTitleStyle: {
             fontWeight: "bold",
           },
+          tabBarIcon: ({ focused }) => (
+            <View
+              style={{
+                top: Platform.OS === "ios" ? 10 : 0,
+              }}>
+              <View
+                style={[
+                  {
+                    padding: 6,
+
+                    borderRadius: 12,
+                    borderWidth: 2,
+                    borderColor: focused ? "transparent" : "transparent",
+                    backgroundColor: focused ? "white" : "green",
+                  },
+                  focused ? {} : { borderWidth: 0 }, // If not focused, remove the border
+                ]}>
+                <FontAwesomeIcon
+                  name="slideshare"
+                  size={24}
+                  color={focused ? "green" : "white"}
+                />
+              </View>
+            </View>
+          ),
           tabBarLabel: () => null,
           tabBarShowLabel: false,
           tabBarBadge: 2,
         }}
       />
+
       <Tab.Screen
         name="Experts"
         component={ExpertRoute}
@@ -136,8 +242,34 @@ const Home = ({ navigate }) => {
           headerTitleStyle: {
             fontWeight: "bold",
           },
+          tabBarIcon: ({ focused }) => (
+            <View
+              style={{
+                top: Platform.OS === "ios" ? 10 : 0,
+              }}>
+              <View
+                style={[
+                  {
+                    padding: 6,
+
+                    borderRadius: 12,
+                    borderWidth: 2,
+                    borderColor: focused ? "transparent" : "transparent",
+                    backgroundColor: focused ? "white" : "green",
+                  },
+                  focused ? {} : { borderWidth: 0 }, // If not focused, remove the border
+                ]}>
+                <Entypo
+                  name="help-with-circle"
+                  size={24}
+                  color={focused ? "green" : "white"}
+                />
+              </View>
+            </View>
+          ),
           tabBarLabel: () => null,
           tabBarShowLabel: false,
+          headerShown: false,
           tabBarBadge: 3,
         }}
       />

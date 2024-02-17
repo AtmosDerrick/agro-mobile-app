@@ -110,7 +110,7 @@ const SellerStore = ({ navigation, handleOrder }) => {
       <View>
         <View className="w-[100px] h-[100px] mr-4">
           <Image
-            source={item.productImage}
+            source={{ uri: item.productImage[0] }}
             className="w-[100px] h-[100px] rounded-md "
           />
         </View>
@@ -129,13 +129,27 @@ const SellerStore = ({ navigation, handleOrder }) => {
   );
 
   return (
-    <FlatList
-      data={product}
-      renderItem={renderItem}
-      keyExtractor={(item) => item.id.toString()}
-      numColumns={1} // Set the number of columns to 2 for a two-column grid
-      contentContainerStyle={styles.flatListContainer}
-    />
+    <View>
+      <View className="">
+        <View className="flex-row justify-between mx-4 items-center">
+          <Text className="text-sm font-medium text-gray-600 my-4">
+            Call Requested
+          </Text>
+          <View className="flex-row justify-start items-center gap-2">
+            <View className="w-8 h-8 flex-row justify-center items-center bg-green-600 rounded-full">
+              <Text className="font-semibold text-white drop-shadow-md">4</Text>
+            </View>
+          </View>
+        </View>
+        <FlatList
+          data={product}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id.toString()}
+          numColumns={1} // Set the number of columns to 2 for a two-column grid
+          contentContainerStyle={styles.flatListContainer}
+        />
+      </View>
+    </View>
   );
 };
 

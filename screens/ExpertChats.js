@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   TextInput,
 } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -102,7 +103,7 @@ const ExpertChats = ({ navigation }) => {
   );
 
   return (
-    <View className="mx-4 h-full">
+    <ScrollView className="mx-2 h-full mb-24">
       <View className="flex-row justify-between gap-x-4 mb-2 shadow-sm">
         <View className="my-2 w-5/6   bg-gray-50 flex-row items-center justify-start border-gray-300 border-2 rounded-md">
           <View className="border-r-1 border-gray-400 pl-2">
@@ -128,7 +129,7 @@ const ExpertChats = ({ navigation }) => {
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
       />
-    </View>
+    </ScrollView>
   );
 };
 
